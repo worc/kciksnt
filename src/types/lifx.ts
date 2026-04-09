@@ -1,3 +1,9 @@
+import {
+  Uint8,
+  Uint16,
+  Uint32,
+} from './uint'
+
 export namespace Lifx {
   export namespace Application {
     export interface FrameHeader {
@@ -26,5 +32,29 @@ export namespace Lifx {
       brightness: number // 0.0–1.0
       kelvin: number     // 1500–9000 K (valid range varies by device)
     }
+  }
+
+  export namespace OverWire {
+    export interface FrameHeader {
+      size: Uint16
+      protocol: Uint16
+      addressable: 0b1
+      tagged: 0b0 | 0b1
+      origin: Uint8
+      source: Uint32
+    }
+
+    export interface FrameAddress {
+      target: Uint8Array
+      res_required: 0b0 | 0b1
+      ack_required: 0b0 | 0b1
+      sequence: Uint8
+    }
+
+    export interface ProtocolHeader {
+      type: Uint16
+    }
+
+    export type Header = Uint8Array
   }
 }
