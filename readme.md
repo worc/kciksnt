@@ -1,5 +1,7 @@
 # kciksnt
 
+*Turn on the lamp*
+
 ## Description
 
 Local LIFX control.
