@@ -9,7 +9,7 @@ interface BuildOpts {
   source?: number
 }
 
-export function buildMessage(
+export function buildMessage (
   type: number,
   target = TARGET_ALL,
   payload?: Uint8Array,
