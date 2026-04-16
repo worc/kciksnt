@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from 'wouter'
 import type { DiscoveredDevice } from '../types/api'
 
 export interface DiscoveryTimestamps {
@@ -54,7 +55,10 @@ export default function DiscoveredDevices ({ state }: { state: DiscoveryState })
         <ul>
           {state.devices.map(device => (
             <li key={device.mac}>
-              <code>{device.mac}</code> — {device.ip}:{device.port}
+              <Link href={`/devices/${device.mac}`}>
+                <code>{device.mac}</code>
+              </Link>
+              {' '}— {device.ip}:{device.port}
             </li>
           ))}
         </ul>
