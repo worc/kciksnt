@@ -1,64 +1,31 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Link } from 'wouter'
-import type { DiscoveredDevice } from '../types/api'
+import useDeviceStore from '../store/DeviceStore'
 
-export interface DiscoveryTimestamps {
-  clientSentAt: number
-  serverReceivedAt: number
-  serverRespondedAt: number
-  clientReceivedAt: number
-}
+export default function DiscoveredDevices () {
+  const { devices, discover } = useDeviceStore()
 
-export interface DiscoveryState {
-  devices: DiscoveredDevice[]
-  timestamps: DiscoveryTimestamps | null
-  pending: boolean
-}
-
-function Telemetry ({ t }: { t: DiscoveryTimestamps }) {
-  const clientToServer   = t.serverReceivedAt  - t.clientSentAt
-  const serverDiscovery  = t.serverRespondedAt - t.serverReceivedAt
-  const serverToClient   = t.clientReceivedAt  - t.serverRespondedAt
-  const fullRtt          = t.clientReceivedAt  - t.clientSentAt
-
-  const updatedAt = new Date(t.clientReceivedAt).toLocaleTimeString()
-
-  return (
-    <p>
-      <time dateTime={new Date(t.clientReceivedAt).toISOString()}>
-        Last updated: {updatedAt}
-      </time>
-      {' · '}
-      RTT {fullRtt}ms
-      {' ('}↑{clientToServer}ms · discovery {serverDiscovery}ms · ↓{serverToClient}ms{')'}
-    </p>
-  )
-}
-
-export default function DiscoveredDevices ({ state }: { state: DiscoveryState }) {
-  if (!state.timestamps && !state.pending) {
-    return <p>No discovery requested yet.</p>
-  }
-
-  if (state.pending && !state.timestamps) {
-    return <p>Discovering…</p>
-  }
+  // initial discover
+  useEffect(() => {
+    discover()
+  }, [])
 
   return (
     <section>
-      {state.timestamps && <Telemetry t={state.timestamps} />}
-      {state.pending && <p>Discovering…</p>}
+      <button onClick={discover}>
+        Discover devices
+      </button>
 
-      {state.devices.length === 0 ? (
+      {devices.length === 0 ? (
         <p>No devices found.</p>
       ) : (
         <ul>
-          {state.devices.map(device => (
+          {devices.map(device => (
             <li key={device.mac}>
               <Link href={`/devices/${device.mac}`}>
                 <code>{device.mac}</code>
               </Link>
-              {' '}— {device.ip}:{device.port}
+              {device.ip && ` — ${device.ip}:${device.port}`}
             </li>
           ))}
         </ul>

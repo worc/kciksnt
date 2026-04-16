@@ -1,6 +1,8 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { Link } from 'wouter'
-import type { ClientMessage, ServerMessage, DeviceSnapshot, DeviceFieldUpdate } from '../types/ws'
+import useDeviceStore from '../store/DeviceStore'
+import type { DeviceSnapshot } from '../types/ws'
+import type { InspectTelemetry } from '../store/DeviceStore'
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -27,13 +29,14 @@ function pct (n: number) { return `${(n * 100).toFixed(1)}%` }
 function deg (n: number) { return `${n.toFixed(1)}°` }
 
 // ---------------------------------------------------------------------------
-// Sub-renderers for individual fields
+// Sub-renderers
 // ---------------------------------------------------------------------------
 
+function Pending () {
+  return <span aria-busy="true">…</span>
+}
+
 function ColorRow ({ color }: { color: NonNullable<DeviceSnapshot['color']> }) {
-  // if (color.saturation < 0.01) {
-  //   return <>{color.kelvin}K · brightness {pct(color.brightness)}</>
-  // }
   return <>hue {deg(color.hue)} · sat {pct(color.saturation)} · brightness {pct(color.brightness)} · {color.kelvin}K</>
 }
 
@@ -56,9 +59,18 @@ function FeaturesRow ({ features }: { features: NonNullable<DeviceSnapshot['vers
   )
 }
 
-// A placeholder shown while a field hasn't arrived yet
-function Pending () {
-  return <span aria-busy="true">…</span>
+function Telemetry ({ t }: { t: InspectTelemetry }) {
+  const clientToServer   = t.serverReceivedAt  - t.clientSentAt
+  const serverQueryTime  = t.serverRespondedAt - t.serverReceivedAt
+  const serverToClient   = t.clientReceivedAt  - t.serverRespondedAt
+  const fullRtt          = t.clientReceivedAt  - t.clientSentAt
+
+  return (
+    <p>
+      Inspect RTT {fullRtt}ms
+      {' ('}↑{clientToServer}ms · queries {serverQueryTime}ms · ↓{serverToClient}ms{')'}
+    </p>
+  )
 }
 
 // ---------------------------------------------------------------------------
@@ -68,52 +80,32 @@ function Pending () {
 interface Props { mac: string }
 
 export default function Device ({ mac }: Props) {
-  const [snapshot, setSnapshot] = useState<DeviceSnapshot>({ mac })
-  const [complete, setComplete] = useState(false)
-  const [error, setError]       = useState<string | null>(null)
+  const { devices, inspecting, inspectErrors, inspectTelemetry, inspect } = useDeviceStore()
+
+  const snapshot = devices.find(d => d.mac === mac)
+  const loading  = inspecting.has(mac)
+  const error    = inspectErrors[mac]
+  const telemetry = inspectTelemetry[mac]
 
   useEffect(() => {
-    const ws = new WebSocket(`ws://${window.location.host}/ws`)
-
-    ws.onopen = () => {
-      const msg: ClientMessage = { type: 'inspect_device', mac, sentAt: Date.now() }
-      ws.send(JSON.stringify(msg))
-    }
-
-    ws.onmessage = (event: MessageEvent) => {
-      let msg: ServerMessage
-      try {
-        msg = JSON.parse(event.data as string) as ServerMessage
-      } catch {
-        return
-      }
-
-      if (msg.type === 'device_field' && msg.mac === mac) {
-        const update = msg.update as DeviceFieldUpdate
-        setSnapshot(prev => ({ ...prev, [update.field]: update.value }))
-      }
-
-      if (msg.type === 'device_inspect_complete' && msg.mac === mac) {
-        setComplete(true)
-      }
-
-      if (msg.type === 'device_inspect_error' && msg.mac === mac) {
-        setError(msg.error)
-      }
-    }
-
-    return () => ws.close()
+    inspect(mac)
   }, [mac])
 
   return (
     <main>
       <nav><Link href="/">← All devices</Link></nav>
 
-      <h1>{snapshot.label ?? mac}</h1>
+      <h1>{snapshot?.label ?? mac}</h1>
       <p>
         <code>{mac}</code>
-        {complete ? ' · fully loaded' : error ? ` · error: ${error}` : ' · loading…'}
+        {loading
+          ? ' · loading…'
+          : error
+            ? ` · error: ${error}`
+            : ' · fully loaded'}
       </p>
+
+      {telemetry && <Telemetry t={telemetry} />}
 
       <table>
         <tbody>
@@ -121,39 +113,39 @@ export default function Device ({ mac }: Props) {
           {/* Light state */}
           <tr>
             <th scope="row">Power</th>
-            <td>{snapshot.power ? (snapshot.power.on ? 'On' : 'Off') : <Pending />}</td>
+            <td>{snapshot?.power ? (snapshot.power.on ? 'On' : 'Off') : <Pending />}</td>
           </tr>
           <tr>
             <th scope="row">Color</th>
-            <td>{snapshot.color ? <ColorRow color={snapshot.color} /> : <Pending />}</td>
+            <td>{snapshot?.color ? <ColorRow color={snapshot.color} /> : <Pending />}</td>
           </tr>
 
           {/* Identity */}
           <tr>
             <th scope="row">Label</th>
-            <td>{snapshot.label ?? <Pending />}</td>
+            <td>{snapshot?.label ?? <Pending />}</td>
           </tr>
           <tr>
             <th scope="row">Group</th>
-            <td>{snapshot.group ?? <Pending />}</td>
+            <td>{snapshot?.group ?? <Pending />}</td>
           </tr>
           <tr>
             <th scope="row">Location</th>
-            <td>{snapshot.location ?? <Pending />}</td>
+            <td>{snapshot?.location ?? <Pending />}</td>
           </tr>
 
           {/* Hardware */}
           <tr>
             <th scope="row">Product</th>
-            <td>{snapshot.version ? <VersionRow version={snapshot.version} /> : <Pending />}</td>
+            <td>{snapshot?.version ? <VersionRow version={snapshot.version} /> : <Pending />}</td>
           </tr>
-          {snapshot.version && <FeaturesRow features={snapshot.version.features} />}
+          {snapshot?.version && <FeaturesRow features={snapshot.version.features} />}
 
           {/* Firmware */}
           <tr>
             <th scope="row">Firmware</th>
             <td>
-              {snapshot.firmware
+              {snapshot?.firmware
                 ? `v${snapshot.firmware.version_major}.${snapshot.firmware.version_minor} (build ${snapshot.firmware.build})`
                 : <Pending />}
             </td>
@@ -163,7 +155,7 @@ export default function Device ({ mac }: Props) {
           <tr>
             <th scope="row">Wifi</th>
             <td>
-              {snapshot.wifi
+              {snapshot?.wifi
                 ? `${snapshot.wifi.quality} · RSSI ${snapshot.wifi.rssi} dBm`
                 : <Pending />}
             </td>
@@ -172,15 +164,15 @@ export default function Device ({ mac }: Props) {
           {/* Device clock / uptime */}
           <tr>
             <th scope="row">Uptime</th>
-            <td>{snapshot.info ? nsToHuman(snapshot.info.uptime_ns) : <Pending />}</td>
+            <td>{snapshot?.info ? nsToHuman(snapshot.info.uptime_ns) : <Pending />}</td>
           </tr>
           <tr>
             <th scope="row">Device time</th>
-            <td>{snapshot.info ? nsToDate(snapshot.info.time) : <Pending />}</td>
+            <td>{snapshot?.info ? nsToDate(snapshot.info.time) : <Pending />}</td>
           </tr>
           <tr>
             <th scope="row">Last downtime</th>
-            <td>{snapshot.info ? nsToHuman(snapshot.info.downtime_ns) : <Pending />}</td>
+            <td>{snapshot?.info ? nsToHuman(snapshot.info.downtime_ns) : <Pending />}</td>
           </tr>
 
         </tbody>
