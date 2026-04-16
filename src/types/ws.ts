@@ -1,13 +1,31 @@
 import type { DiscoveredDevice } from './api'
 import type { Lifx } from './lifx'
 
+interface WebSocketMessage {
+  type: string,
+  timestamps: {
+    clientReceivedAt?: number   // stamped onmessage
+    clientSentAt: number        // echoed from client
+    serverReceivedAt?: number    // stamped when server message handler fired
+    serverRespondedAt?: number   // stamped just before ws.send
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Client → Server
 // ---------------------------------------------------------------------------
+interface Discover extends WebSocketMessage {
+  type: 'discover'
+}
+
+interface InspectDevice extends WebSocketMessage {
+  type: 'inspect_device'
+  mac: string
+}
 
 export type ClientMessage =
-  | { type: 'discover'; sentAt: number }
-  | { type: 'inspect_device'; mac: string; sentAt: number }
+  | Discover
+  | InspectDevice
 
 // ---------------------------------------------------------------------------
 // Device snapshot — the accumulated picture of one device built up
@@ -18,6 +36,8 @@ export type ClientMessage =
 
 export interface DeviceSnapshot {
   mac: string
+  ip?: string
+  port?: number
   label?:    string
   power?:    { level: number; on: boolean }
   color?:    Lifx.Application.Hsbk
@@ -49,18 +69,41 @@ export type DeviceFieldUpdate =
 // ---------------------------------------------------------------------------
 // Server → Client
 // ---------------------------------------------------------------------------
+interface DiscoveryResult extends WebSocketMessage {
+  type: 'discovery_result'
+  devices: DiscoveredDevice[]
+}
+
+interface DeviceField extends WebSocketMessage {
+  type: 'device_field'
+  mac: string
+  update: DeviceFieldUpdate
+}
+
+interface DeviceInspectComplete extends WebSocketMessage {
+  type:'device_inspect_complete'
+  mac: string
+}
+
+interface DeviceInspectError extends WebSocketMessage {
+  type: 'device_inspect_error'
+  mac: string
+  error: string
+}
+
+interface DevReload {
+  type: 'dev_reload'
+}
+
+interface Error extends WebSocketMessage {
+  type: 'error'
+  message: string
+}
 
 export type ServerMessage =
-  | {
-      type: 'discovery_result'
-      devices: DiscoveredDevice[]
-      timestamps: {
-        clientSentAt: number      // echoed from client
-        serverReceivedAt: number  // stamped when server message handler fired
-        serverRespondedAt: number // stamped just before ws.send
-      }
-    }
-  | { type: 'device_field';            mac: string; update: DeviceFieldUpdate; receivedAt: number }
-  | { type: 'device_inspect_complete'; mac: string; completedAt: number }
-  | { type: 'device_inspect_error';    mac: string; error: string }
-  | { type: 'error'; message: string }
+  | DiscoveryResult
+  | DeviceField
+  | DeviceInspectComplete
+  | DeviceInspectError
+  | DevReload
+  | Error
