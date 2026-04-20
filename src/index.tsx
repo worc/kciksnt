@@ -6,7 +6,7 @@ import App from './App'
 
 const GlobalStyle = createGlobalStyle`
   html, body {
-    margin: 0;
+    margin: 4px;
     font-family: system-ui, -apple-system, sans-serif;
     font-size: 16px;
   }
