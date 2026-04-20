@@ -18,14 +18,28 @@ interface Discover extends WebSocketMessage {
   type: 'discover'
 }
 
+interface IdentifyDevice extends WebSocketMessage {
+  type: 'identify_device'
+  mac: string
+}
+
 interface InspectDevice extends WebSocketMessage {
   type: 'inspect_device'
   mac: string
 }
 
+interface SetColor extends WebSocketMessage {
+  type: 'set_color'
+  mac: string
+  hsbk: Lifx.Application.Hsbk
+  duration?: number
+}
+
 export type ClientMessage =
   | Discover
+  | IdentifyDevice
   | InspectDevice
+  | SetColor
 
 // ---------------------------------------------------------------------------
 // Device snapshot — the accumulated picture of one device built up
