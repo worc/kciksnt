@@ -44,7 +44,7 @@ export async function discover (
   udp: LifxSocket,
   clientSentAt: number,
   serverReceivedAt: number,
-  timeoutMs = 1500,
+  timeoutMs = 2500,
 ): Promise<DiscoveredDevice[]> {
   const devices = await runDiscovery(registry, udp, timeoutMs)
   registry.dispatch({

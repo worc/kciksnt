@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { send, subscribe } from '../utils/useWebSocket'
 import type { ClientMessage, DeviceSnapshot, DeviceFieldUpdate } from '../types/ws'
+import type { Lifx } from '../types/lifx'
 
 interface InspectTelemetry {
   clientSentAt:      number
@@ -19,6 +20,7 @@ interface DeviceStore {
   identify:     (mac: string) => void
   inspect:      (mac: string) => void
   reinspect:    (mac: string) => void
+  setColor:     (mac: string, hsbk: Lifx.Application.Hsbk, duration?: number) => void
   setLabel:     (mac: string, label: string) => void
   setGroup:     (mac: string, label: string) => void
   setLocation:  (mac: string, label: string) => void
@@ -200,6 +202,10 @@ const useDeviceStore = create<DeviceStore>((set, get) => {
         ),
       }))
       forceInspect(mac)
+    },
+
+    setColor (mac: string, hsbk: Lifx.Application.Hsbk, duration?: number) {
+      send({ type: 'set_color', mac, hsbk, duration, timestamps: { clientSentAt: Date.now() } })
     },
 
     setLabel (mac: string, label: string) {

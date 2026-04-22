@@ -1,7 +1,7 @@
 import { Lifx } from '../types/lifx'
 import { asUint16 } from '../types/uint'
 
-export function encodeHsbk(hsbk: Lifx.Application.Hsbk): Uint8Array {
+export function encodeHsbk (hsbk: Lifx.Application.Hsbk): Uint8Array {
   const bytes = new Uint8Array(8)
   const view = new DataView(bytes.buffer)
   view.setUint16(0, asUint16(Math.round(0x10000 * hsbk.hue / 360) % 0x10000), true)
@@ -11,7 +11,7 @@ export function encodeHsbk(hsbk: Lifx.Application.Hsbk): Uint8Array {
   return bytes
 }
 
-export function decodeHsbk(buf: Uint8Array): Lifx.Application.Hsbk {
+export function decodeHsbk (buf: Uint8Array): Lifx.Application.Hsbk {
   const view = new DataView(buf.buffer, buf.byteOffset, buf.byteLength)
   return {
     hue: (view.getUint16(0, true) / 0x10000) * 360,
