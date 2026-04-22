@@ -10,7 +10,7 @@ const DeviceListItem = styled.li`
 `
 
 export default function DiscoveredDevices () {
-  const { devices, discover } = useDeviceStore()
+  const { devices, undetectedMacs, discover } = useDeviceStore()
 
   // initial discover
   useEffect(() => {
@@ -28,11 +28,11 @@ export default function DiscoveredDevices () {
       </button>
 
       {devices.length === 0 ? (
-        <p>No devices found.</p>
+        <div>No devices found.</div>
       ) : (
         <>
           {locations.length > 0 && (
-            <p>
+            <div>
               <strong>Locations: </strong>
               {locations.map((loc, i) => (
                 <span key={loc}>
@@ -40,11 +40,11 @@ export default function DiscoveredDevices () {
                   <Link href={`/locations/${encodeURIComponent(loc)}`}>{loc}</Link>
                 </span>
               ))}
-            </p>
+            </div>
           )}
 
           {groups.length > 0 && (
-            <p>
+            <div>
               <strong>Groups: </strong>
               {groups.map((grp, i) => (
                 <span key={grp}>
@@ -52,32 +52,36 @@ export default function DiscoveredDevices () {
                   <Link href={`/groups/${encodeURIComponent(grp)}`}>{grp}</Link>
                 </span>
               ))}
-            </p>
+            </div>
           )}
 
-          <ul>
-            {devices.map(device => (
-              <DeviceListItem key={device.mac}>
-                {device.location && (
-                  <Link href={`/locations/${encodeURIComponent(device.location)}`}>
-                    {device.location}
+          <div>
+            <strong>Devices: </strong>
+            <ul>
+              {devices.map(device => (
+                <DeviceListItem key={device.mac}>
+                  {device.location && (
+                    <Link href={`/locations/${encodeURIComponent(device.location)}`}>
+                      {device.location}
+                    </Link>
+                  )}
+                  {device.location && device.group && ' · '}
+                  {device.group && (
+                    <Link href={`/groups/${encodeURIComponent(device.group)}`}>
+                      {device.group}
+                    </Link>
+                  )}
+                  {(device.location || device.group) && ' · '}
+                  <span>{device.label || <em>unnamed</em>} —</span>
+                  <Link href={`/devices/${device.mac}`}>
+                    <code>{device.mac}</code>
                   </Link>
-                )}
-                {device.location && device.group && ' · '}
-                {device.group && (
-                  <Link href={`/groups/${encodeURIComponent(device.group)}`}>
-                    {device.group}
-                  </Link>
-                )}
-                {(device.location || device.group) && ' · '}
-                <span>{device.label || <em>unnamed</em>} —</span>
-                <Link href={`/devices/${device.mac}`}>
-                  <code>{device.mac}</code>
-                </Link>
-                {device.ip && ` — ${device.ip}:${device.port}`}
-              </DeviceListItem>
-            ))}
-          </ul>
+                  {device.ip && ` — ${device.ip}:${device.port}`}
+                  {undetectedMacs.has(device.mac) && <em> (offline)</em>}
+                </DeviceListItem>
+              ))}
+            </ul>
+          </div>
         </>
       )}
     </section>

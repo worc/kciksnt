@@ -6,6 +6,7 @@ const PORT = 7410
 
 const registry = new DeviceRegistry()
 await registry.loadProducts()
+await registry.loadFromDisk()
 
 let udp: Awaited<ReturnType<typeof createUdpSocket>>
 try {

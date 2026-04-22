@@ -12,6 +12,7 @@ interface InspectTelemetry {
 
 interface DeviceStore {
   devices:           DeviceSnapshot[]
+  undetectedMacs:    Set<string>
   inspecting:        Set<string>
   inspectErrors:     Record<string, string>
   inspectTelemetry:  Record<string, InspectTelemetry>
@@ -99,7 +100,10 @@ const useDeviceStore = create<DeviceStore>((set, get) => {
   subscribe(msg => {
 
     if (msg.type === 'discovery_result') {
-      set({ devices: msg.devices })
+      const undetectedMacs = new Set(
+        msg.devices.filter(d => d.detected === false).map(d => d.mac)
+      )
+      set({ devices: msg.devices, undetectedMacs })
       // Stagger identifies so we don't flood the network
       msg.devices.forEach((device, i) => {
         setTimeout(() => identify(device.mac), i * 150)
@@ -169,6 +173,7 @@ const useDeviceStore = create<DeviceStore>((set, get) => {
   return {
 
     devices:          [],
+    undetectedMacs:   new Set(),
     inspecting:       new Set(),
     inspectErrors:    {},
     inspectTelemetry: {},

@@ -137,14 +137,15 @@ function Telemetry ({ t }: { t: InspectTelemetry }) {
 interface Props { mac: string }
 
 export default function Device ({ mac }: Props) {
-  const { devices, inspecting, inspectErrors, inspectTelemetry, inspect, reinspect, setLabel, setGroup, setLocation } = useDeviceStore()
+  const { devices, undetectedMacs, inspecting, inspectErrors, inspectTelemetry, inspect, reinspect, setLabel, setGroup, setLocation } = useDeviceStore()
   const [reinspectCount, setReinspectCount] = useState(0)
   const [snapshot, setSnapshot] = useState({})
 
   // const snapshot  = devices.find(d => d.mac === mac)
-  const loading   = inspecting.has(mac)
-  const error     = inspectErrors[mac]
-  const telemetry = inspectTelemetry[mac]
+  const loading    = inspecting.has(mac)
+  const error      = inspectErrors[mac]
+  const telemetry  = inspectTelemetry[mac]
+  const isOffline  = undetectedMacs.has(mac)
 
   useEffect(() => {
     inspect(mac)
@@ -170,9 +171,14 @@ export default function Device ({ mac }: Props) {
           ? ' · loading…'
           : error
             ? ` · error: ${error}`
-            : ' · fully loaded'}
+            : isOffline
+              ? ' · offline — showing cached data'
+              : ' · fully loaded'}
         {!loading && <> · <button onClick={handleReinspect}>re-inspect</button></>}
       </p>
+      {isOffline && !loading && !error && (
+        <p><em>This device was not seen in the last discovery run. Data shown is from a previous session. Use re-inspect to attempt contact.</em></p>
+      )}
 
       {telemetry && <Telemetry t={telemetry} />}
 
