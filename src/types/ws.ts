@@ -35,11 +35,32 @@ interface SetColor extends WebSocketMessage {
   duration?: number
 }
 
+interface SetLabel extends WebSocketMessage {
+  type: 'set_label'
+  mac: string
+  label: string
+}
+
+interface SetGroup extends WebSocketMessage {
+  type: 'set_group'
+  mac: string
+  label: string
+}
+
+interface SetLocation extends WebSocketMessage {
+  type: 'set_location'
+  mac: string
+  label: string
+}
+
 export type ClientMessage =
   | Discover
   | IdentifyDevice
   | InspectDevice
   | SetColor
+  | SetLabel
+  | SetGroup
+  | SetLocation
 
 // ---------------------------------------------------------------------------
 // Device snapshot — the accumulated picture of one device built up
