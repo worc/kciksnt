@@ -1,0 +1,950 @@
+[
+  {
+    "packet_number": 2,
+    "name": "GetService",
+    "direction": "get",
+    "category": "Discovery",
+    "description": "Used for discovery. Broadcast to the network with tagged=0 and target=all-zeros. Each device responds with one or more StateService (3) messages.",
+    "fields": [],
+    "reply_type": 3
+  },
+  {
+    "packet_number": 3,
+    "name": "StateService",
+    "direction": "state",
+    "category": "Discovery",
+    "description": "Reports what services are available and the port each service is on. The only message you care about confirms UDP on a port that is usually 56700 — but do not assume this.",
+    "fields": [
+      { "name": "service", "type": "Uint8",  "description": "Service type. See Services enum." },
+      { "name": "port",    "type": "Uint32", "description": "Port of the service. Usually 56700." }
+    ],
+    "reply_to": [2]
+  },
+  {
+    "packet_number": 14,
+    "name": "GetHostFirmware",
+    "direction": "get",
+    "category": "Device",
+    "description": "Requests the firmware version on the device. Typically used together with StateVersion (33) to determine device capabilities.",
+    "fields": [],
+    "reply_type": 15
+  },
+  {
+    "packet_number": 15,
+    "name": "StateHostFirmware",
+    "direction": "state",
+    "category": "Device",
+    "description": "Firmware version on the device. Treat version_major and version_minor as a (major, minor) pair — e.g. (3, 60) > (2, 80). LIFX uses a different major for each device generation.",
+    "fields": [
+      { "name": "build",         "type": "Uint64",   "description": "Timestamp of the firmware as an epoch." },
+      { "name": "reserved6",     "type": "Reserved", "description": "8 reserved bytes, set to 0." },
+      { "name": "version_minor", "type": "Uint16",   "description": "Minor component of the firmware version." },
+      { "name": "version_major", "type": "Uint16",   "description": "Major component of the firmware version." }
+    ],
+    "reply_to": [14]
+  },
+  {
+    "packet_number": 16,
+    "name": "GetWifiInfo",
+    "direction": "get",
+    "category": "Device",
+    "description": "Requests the signal strength of the device.",
+    "fields": [],
+    "reply_type": 17
+  },
+  {
+    "packet_number": 17,
+    "name": "StateWifiInfo",
+    "direction": "state",
+    "category": "Device",
+    "description": "Signal strength information. The signal field units vary between products; apply the RSSI formula (rssi = floor(10 * log10(signal) + 0.5)) to get a dBm value, then map to quality strings.",
+    "fields": [
+      { "name": "signal",    "type": "Float",    "description": "Raw signal value. Apply the RSSI formula to interpret." },
+      { "name": "reserved6", "type": "Reserved", "description": "4 reserved bytes, set to 0." },
+      { "name": "reserved7", "type": "Reserved", "description": "4 reserved bytes, set to 0." },
+      { "name": "reserved8", "type": "Reserved", "description": "2 reserved bytes, set to 0." }
+    ],
+    "reply_to": [16]
+  },
+  {
+    "packet_number": 18,
+    "name": "GetWifiFirmware",
+    "direction": "get",
+    "category": "Device",
+    "description": "First and second generation devices have separate wifi firmware. Requests the version of that firmware.",
+    "fields": [],
+    "reply_type": 19
+  },
+  {
+    "packet_number": 19,
+    "name": "StateWifiFirmware",
+    "direction": "state",
+    "category": "Device",
+    "description": "Wifi firmware version. Only relevant for first and second generation LIFX products.",
+    "fields": [
+      { "name": "build",         "type": "Uint64",   "description": "Timestamp when the wifi firmware was created as an epoch." },
+      { "name": "reserved6",     "type": "Reserved", "description": "8 reserved bytes, set to 0." },
+      { "name": "version_minor", "type": "Uint16",   "description": "Minor component of the version." },
+      { "name": "version_major", "type": "Uint16",   "description": "Major component of the version." }
+    ],
+    "reply_to": [18]
+  },
+  {
+    "packet_number": 20,
+    "name": "GetPower",
+    "direction": "get",
+    "category": "Device",
+    "description": "Requests the power level of the device.",
+    "fields": [],
+    "reply_type": 22
+  },
+  {
+    "packet_number": 21,
+    "name": "SetPower",
+    "direction": "set",
+    "category": "Device",
+    "description": "Sets the power level of the device.",
+    "fields": [
+      { "name": "level", "type": "Uint16", "description": "0 turns the device off; 65535 turns it on." }
+    ],
+    "reply_type": 22
+  },
+  {
+    "packet_number": 22,
+    "name": "StatePower",
+    "direction": "state",
+    "category": "Device",
+    "description": "Current power level. 0 means off; any other value means on. 65535 is full power. During a transition via SetLightPower (117) the value may be anywhere between 0 and 65535.",
+    "fields": [
+      { "name": "level", "type": "Uint16", "description": "Current power level of the device." }
+    ],
+    "reply_to": [20, 21]
+  },
+  {
+    "packet_number": 23,
+    "name": "GetLabel",
+    "direction": "get",
+    "category": "Device",
+    "description": "Requests the label set on the device.",
+    "fields": [],
+    "reply_type": 25
+  },
+  {
+    "packet_number": 24,
+    "name": "SetLabel",
+    "direction": "set",
+    "category": "Device",
+    "description": "Sets the label on the device. The label is displayed as the device name in the LIFX mobile apps.",
+    "fields": [
+      { "name": "label", "type": "String", "description": "32-byte null-terminated unicode string to assign as the device label." }
+    ],
+    "reply_type": 25
+  },
+  {
+    "packet_number": 25,
+    "name": "StateLabel",
+    "direction": "state",
+    "category": "Device",
+    "description": "The label of the device.",
+    "fields": [
+      { "name": "label", "type": "String", "description": "32-byte null-terminated unicode string of the device label." }
+    ],
+    "reply_to": [23, 24]
+  },
+  {
+    "packet_number": 32,
+    "name": "GetVersion",
+    "direction": "get",
+    "category": "Device",
+    "description": "Requests the product type of the device. Used with the Product Registry to determine capabilities.",
+    "fields": [],
+    "reply_type": 33
+  },
+  {
+    "packet_number": 33,
+    "name": "StateVersion",
+    "direction": "state",
+    "category": "Device",
+    "description": "Product type of the device. Use vendor + product with the Product Registry to determine capabilities.",
+    "fields": [
+      { "name": "vendor",    "type": "Uint32",   "description": "Vendor id. For LIFX products this is 1." },
+      { "name": "product",   "type": "Uint32",   "description": "Product id. See the Product Registry." },
+      { "name": "reserved6", "type": "Reserved", "description": "4 reserved bytes, set to 0." }
+    ],
+    "reply_to": [32]
+  },
+  {
+    "packet_number": 34,
+    "name": "GetInfo",
+    "direction": "get",
+    "category": "Device",
+    "description": "Requests uptime, downtime, and current device time.",
+    "fields": [],
+    "reply_type": 35
+  },
+  {
+    "packet_number": 35,
+    "name": "StateInfo",
+    "direction": "state",
+    "category": "Device",
+    "description": "Device uptime, downtime, and current time (the time value from the device is likely inaccurate).",
+    "fields": [
+      { "name": "time",     "type": "Uint64", "description": "Current time according to the device. Likely inaccurate." },
+      { "name": "uptime",   "type": "Uint64", "description": "Time in nanoseconds the device has been online since last power on." },
+      { "name": "downtime", "type": "Uint64", "description": "Time in nanoseconds of power-off time, accurate to 5 seconds." }
+    ],
+    "reply_to": [34]
+  },
+  {
+    "packet_number": 38,
+    "name": "SetReboot",
+    "direction": "set",
+    "category": "Device",
+    "description": "Instructs the device to reboot, as if it had been power-cycled. No response packet.",
+    "fields": []
+  },
+  {
+    "packet_number": 45,
+    "name": "Acknowledgement",
+    "direction": "core",
+    "category": "Core",
+    "description": "Returned when ack_required=1 is set on a message. Confirms the device has processed the command.",
+    "fields": []
+  },
+  {
+    "packet_number": 48,
+    "name": "GetLocation",
+    "direction": "get",
+    "category": "Device",
+    "description": "Requests the uuid and label of the location assigned to this device.",
+    "fields": [],
+    "reply_type": 50
+  },
+  {
+    "packet_number": 49,
+    "name": "SetLocation",
+    "direction": "set",
+    "category": "Device",
+    "description": "Sets the location information on the device.",
+    "fields": [
+      { "name": "location",   "type": "Bytes",  "description": "16 bytes representing a UUID. Use the same UUID for all devices in this location." },
+      { "name": "label",      "type": "String", "description": "32-byte null-terminated unicode string of the location name." },
+      { "name": "updated_at", "type": "Uint64", "description": "Time of this update as an epoch in nanoseconds." }
+    ],
+    "reply_type": 50
+  },
+  {
+    "packet_number": 50,
+    "name": "StateLocation",
+    "direction": "state",
+    "category": "Device",
+    "description": "Location details set on the device. To resolve the canonical label for a location UUID, send GetLocation (48) to all devices and pick the label with the latest updated_at for each UUID.",
+    "fields": [
+      { "name": "location",   "type": "Bytes",  "description": "16-byte unique identifier (UUID) of the location." },
+      { "name": "label",      "type": "String", "description": "32-byte null-terminated unicode string of the location name." },
+      { "name": "updated_at", "type": "Uint64", "description": "Epoch in nanoseconds of when this location was set on the device." }
+    ],
+    "reply_to": [48, 49]
+  },
+  {
+    "packet_number": 51,
+    "name": "GetGroup",
+    "direction": "get",
+    "category": "Device",
+    "description": "Requests the uuid and label of the group assigned to this device.",
+    "fields": [],
+    "reply_type": 53
+  },
+  {
+    "packet_number": 52,
+    "name": "SetGroup",
+    "direction": "set",
+    "category": "Device",
+    "description": "Sets the group information on the device.",
+    "fields": [
+      { "name": "group",      "type": "Bytes",  "description": "16 bytes representing a UUID. Use the same UUID for all devices in this group." },
+      { "name": "label",      "type": "String", "description": "32-byte null-terminated unicode string of the group name." },
+      { "name": "updated_at", "type": "Uint64", "description": "Time of this update as an epoch in nanoseconds." }
+    ],
+    "reply_type": 53
+  },
+  {
+    "packet_number": 53,
+    "name": "StateGroup",
+    "direction": "state",
+    "category": "Device",
+    "description": "Group details set on the device. To resolve the canonical label for a group UUID, send GetGroup (51) to all devices and pick the label with the latest updated_at for each UUID.",
+    "fields": [
+      { "name": "group",      "type": "Bytes",  "description": "16-byte unique identifier (UUID) of the group." },
+      { "name": "label",      "type": "String", "description": "32-byte null-terminated unicode string of the group name." },
+      { "name": "updated_at", "type": "Uint64", "description": "Epoch in nanoseconds of when this group was set on the device." }
+    ],
+    "reply_to": [51, 52]
+  },
+  {
+    "packet_number": 58,
+    "name": "EchoRequest",
+    "direction": "get",
+    "category": "Device",
+    "description": "Used to check that a device is online and responding.",
+    "fields": [
+      { "name": "echoing", "type": "Bytes", "description": "64 bytes to receive back in the EchoResponse (59)." }
+    ],
+    "reply_type": 59
+  },
+  {
+    "packet_number": 59,
+    "name": "EchoResponse",
+    "direction": "state",
+    "category": "Device",
+    "description": "Returns the same bytes that were sent in the EchoRequest (58).",
+    "fields": [
+      { "name": "echoing", "type": "Bytes", "description": "64 bytes, same as specified in the EchoRequest." }
+    ],
+    "reply_to": [58]
+  },
+  {
+    "packet_number": 101,
+    "name": "GetColor",
+    "direction": "get",
+    "category": "Light",
+    "description": "Requests the current visual state of the device.",
+    "fields": [],
+    "reply_type": 107
+  },
+  {
+    "packet_number": 102,
+    "name": "SetColor",
+    "direction": "set",
+    "category": "Light",
+    "description": "Sets the HSBK value for the light. For devices with multiple zones, sets all zones to this color.",
+    "fields": [
+      { "name": "reserved6",  "type": "Reserved", "description": "1 reserved byte, set to 0." },
+      { "name": "hue",        "type": "Uint16",   "description": "Hue component of HSBK." },
+      { "name": "saturation", "type": "Uint16",   "description": "Saturation component of HSBK." },
+      { "name": "brightness", "type": "Uint16",   "description": "Brightness component of HSBK." },
+      { "name": "kelvin",     "type": "Uint16",   "description": "Color temperature in Kelvin." },
+      { "name": "duration",   "type": "Uint32",   "description": "Time to transition to new HSBK in milliseconds." }
+    ],
+    "reply_type": 107
+  },
+  {
+    "packet_number": 103,
+    "name": "SetWaveform",
+    "direction": "set",
+    "category": "Light",
+    "description": "Sets the HSBK and waveform values for the light. For devices with multiple zones, treats all zones as one.",
+    "fields": [
+      { "name": "reserved6",  "type": "Reserved", "description": "1 reserved byte, set to 0." },
+      { "name": "transient",  "type": "BoolInt",  "description": "See Waveforms documentation." },
+      { "name": "hue",        "type": "Uint16",   "description": "Hue component of HSBK." },
+      { "name": "saturation", "type": "Uint16",   "description": "Saturation component of HSBK." },
+      { "name": "brightness", "type": "Uint16",   "description": "Brightness component of HSBK." },
+      { "name": "kelvin",     "type": "Uint16",   "description": "Color temperature in Kelvin." },
+      { "name": "period",     "type": "Uint32",   "description": "See Waveforms documentation." },
+      { "name": "cycles",     "type": "Float",    "description": "See Waveforms documentation." },
+      { "name": "skew_ratio", "type": "Int16",    "description": "See Waveforms documentation." },
+      { "name": "waveform",   "type": "Uint8",    "description": "Waveform type. See Waveform enum." }
+    ],
+    "reply_type": 107
+  },
+  {
+    "packet_number": 107,
+    "name": "LightState",
+    "direction": "state",
+    "category": "Light",
+    "description": "Current visual state of the device and its label. When returned in response to a Set message (102/103/119), this reflects the state before the change.",
+    "fields": [
+      { "name": "hue",        "type": "Uint16",   "description": "Hue component of HSBK." },
+      { "name": "saturation", "type": "Uint16",   "description": "Saturation component of HSBK." },
+      { "name": "brightness", "type": "Uint16",   "description": "Brightness component of HSBK." },
+      { "name": "kelvin",     "type": "Uint16",   "description": "Color temperature in Kelvin." },
+      { "name": "reserved6",  "type": "Reserved", "description": "2 reserved bytes, set to 0." },
+      { "name": "power",      "type": "Uint16",   "description": "Current power level of the device." },
+      { "name": "label",      "type": "String",   "description": "32-byte null-terminated unicode string of the current label." },
+      { "name": "reserved7",  "type": "Reserved", "description": "8 reserved bytes, set to 0." }
+    ],
+    "reply_to": [101, 102, 103, 119]
+  },
+  {
+    "packet_number": 116,
+    "name": "GetLightPower",
+    "direction": "get",
+    "category": "Light",
+    "description": "Like GetPower (20), returns the current power level of the device.",
+    "fields": [],
+    "reply_type": 118
+  },
+  {
+    "packet_number": 117,
+    "name": "SetLightPower",
+    "direction": "set",
+    "category": "Light",
+    "description": "Same as SetPower (21) but allows specifying a transition duration.",
+    "fields": [
+      { "name": "level",    "type": "Uint16", "description": "0 turns the device off; 65535 turns it on." },
+      { "name": "duration", "type": "Uint32", "description": "Time to transition to the new state in milliseconds." }
+    ],
+    "reply_type": 118
+  },
+  {
+    "packet_number": 118,
+    "name": "StateLightPower",
+    "direction": "state",
+    "category": "Light",
+    "description": "Current power level of the device.",
+    "fields": [
+      { "name": "level", "type": "Uint16", "description": "Current power level." }
+    ],
+    "reply_to": [116, 117]
+  },
+  {
+    "packet_number": 119,
+    "name": "SetWaveformOptional",
+    "direction": "set",
+    "category": "Light",
+    "description": "Like SetWaveform (103) but allows preserving parts of the original HSBK during the transition via the set_hue / set_saturation / set_brightness / set_kelvin flags.",
+    "fields": [
+      { "name": "reserved6",      "type": "Reserved", "description": "1 reserved byte, set to 0." },
+      { "name": "transient",      "type": "BoolInt",  "description": "See Waveforms documentation." },
+      { "name": "hue",            "type": "Uint16",   "description": "Hue component of HSBK." },
+      { "name": "saturation",     "type": "Uint16",   "description": "Saturation component of HSBK." },
+      { "name": "brightness",     "type": "Uint16",   "description": "Brightness component of HSBK." },
+      { "name": "kelvin",         "type": "Uint16",   "description": "Color temperature in Kelvin." },
+      { "name": "period",         "type": "Uint32",   "description": "See Waveforms documentation." },
+      { "name": "cycles",         "type": "Float",    "description": "See Waveforms documentation." },
+      { "name": "skew_ratio",     "type": "Int16",    "description": "See Waveforms documentation." },
+      { "name": "waveform",       "type": "Uint8",    "description": "Waveform type. See Waveform enum." },
+      { "name": "set_hue",        "type": "BoolInt",  "description": "Use the hue value in this message." },
+      { "name": "set_saturation", "type": "BoolInt",  "description": "Use the saturation value in this message." },
+      { "name": "set_brightness", "type": "BoolInt",  "description": "Use the brightness value in this message." },
+      { "name": "set_kelvin",     "type": "BoolInt",  "description": "Use the kelvin value in this message." }
+    ],
+    "reply_type": 107
+  },
+  {
+    "packet_number": 120,
+    "name": "GetInfrared",
+    "direction": "get",
+    "category": "Light",
+    "description": "Requests the current infrared level of the device.",
+    "fields": [],
+    "reply_type": 121,
+    "requires_capability": "infrared"
+  },
+  {
+    "packet_number": 121,
+    "name": "StateInfrared",
+    "direction": "state",
+    "category": "Light",
+    "description": "Current brightness of the infrared output from the device.",
+    "fields": [
+      { "name": "brightness", "type": "Uint16", "description": "Amount of infrared. 0 is no output; 65535 is full output." }
+    ],
+    "reply_to": [120, 122],
+    "requires_capability": "infrared"
+  },
+  {
+    "packet_number": 122,
+    "name": "SetInfrared",
+    "direction": "set",
+    "category": "Light",
+    "description": "Changes the current infrared brightness on the device.",
+    "fields": [
+      { "name": "brightness", "type": "Uint16", "description": "Amount of infrared to emit. 0 is none; 65535 is maximum." }
+    ],
+    "reply_type": 121,
+    "requires_capability": "infrared"
+  },
+  {
+    "packet_number": 142,
+    "name": "GetHevCycle",
+    "direction": "get",
+    "category": "Light",
+    "description": "Requests whether a HEV cycle is running on the device.",
+    "fields": [],
+    "reply_type": 144,
+    "requires_capability": "hev"
+  },
+  {
+    "packet_number": 143,
+    "name": "SetHevCycle",
+    "direction": "set",
+    "category": "Light",
+    "description": "Starts or stops a HEV cycle on the device.",
+    "fields": [
+      { "name": "enable",     "type": "BoolInt", "description": "false to stop the cycle; true to start it." },
+      { "name": "duration_s", "type": "Uint32",  "description": "Duration in seconds. 0 uses the default set by SetHevCycleConfiguration (146)." }
+    ],
+    "reply_type": 144,
+    "requires_capability": "hev"
+  },
+  {
+    "packet_number": 144,
+    "name": "StateHevCycle",
+    "direction": "state",
+    "category": "Light",
+    "description": "Whether a HEV cycle is running on the device.",
+    "fields": [
+      { "name": "duration_s",  "type": "Uint32",  "description": "Duration in seconds this cycle was set to." },
+      { "name": "remaining_s", "type": "Uint32",  "description": "Duration in seconds remaining in this cycle." },
+      { "name": "last_power",  "type": "BoolInt", "description": "Power state before the cycle started. Only relevant if remaining_s > 0." }
+    ],
+    "reply_to": [142, 143],
+    "requires_capability": "hev"
+  },
+  {
+    "packet_number": 145,
+    "name": "GetHevCycleConfiguration",
+    "direction": "get",
+    "category": "Light",
+    "description": "Requests the default HEV cycle configuration on the device.",
+    "fields": [],
+    "reply_type": 147,
+    "requires_capability": "hev"
+  },
+  {
+    "packet_number": 146,
+    "name": "SetHevCycleConfiguration",
+    "direction": "set",
+    "category": "Light",
+    "description": "Sets default values for HEV cycles on the device.",
+    "fields": [
+      { "name": "indication", "type": "BoolInt", "description": "true to run a short flashing indication at the end of the HEV cycle." },
+      { "name": "duration_s", "type": "Uint32",  "description": "Default duration used when SetHevCycle (143) is given 0 for duration_s." }
+    ],
+    "reply_type": 147,
+    "requires_capability": "hev"
+  },
+  {
+    "packet_number": 147,
+    "name": "StateHevCycleConfiguration",
+    "direction": "state",
+    "category": "Light",
+    "description": "Default HEV cycle configuration on the device.",
+    "fields": [
+      { "name": "indication", "type": "BoolInt", "description": "Whether a short flashing indication runs at the end of an HEV cycle." },
+      { "name": "duration_s", "type": "Uint32",  "description": "Default duration used when SetHevCycle (143) is given 0 for duration_s." }
+    ],
+    "reply_to": [145, 146],
+    "requires_capability": "hev"
+  },
+  {
+    "packet_number": 148,
+    "name": "GetLastHevCycleResult",
+    "direction": "get",
+    "category": "Light",
+    "description": "Requests the result of the last HEV cycle that ran.",
+    "fields": [],
+    "reply_type": 149,
+    "requires_capability": "hev"
+  },
+  {
+    "packet_number": 149,
+    "name": "StateLastHevCycleResult",
+    "direction": "state",
+    "category": "Light",
+    "description": "Result of the last HEV cycle that was run.",
+    "fields": [
+      { "name": "result", "type": "Uint8", "description": "See LightLastHevCycleResult enum." }
+    ],
+    "reply_to": [148],
+    "requires_capability": "hev"
+  },
+  {
+    "packet_number": 223,
+    "name": "StateUnhandled",
+    "direction": "state",
+    "category": "Device",
+    "description": "Returned by some firmware when the device receives a packet it does not know how to handle. Currently only the LIFX Switch has this behaviour.",
+    "fields": [
+      { "name": "unhandled_type", "type": "Uint16", "description": "Type number of the packet that was ignored." }
+    ]
+  },
+  {
+    "packet_number": 401,
+    "name": "SensorGetAmbientLight",
+    "direction": "get",
+    "category": "Device",
+    "description": "Requests the current ambient light level. Legacy feature; only supported by a limited number of devices.",
+    "fields": [],
+    "reply_type": 402
+  },
+  {
+    "packet_number": 402,
+    "name": "SensorStateAmbientLight",
+    "direction": "state",
+    "category": "Device",
+    "description": "Current ambient light level detected by the device. Legacy; unsupported. If the device is on when this is sent the value will be unreliable — best used when the device is soft off.",
+    "fields": [
+      { "name": "lux", "type": "Float", "description": "Detected light level in lux." }
+    ],
+    "reply_to": [401]
+  },
+  {
+    "packet_number": 501,
+    "name": "SetColorZones",
+    "direction": "set",
+    "category": "MultiZone",
+    "description": "Sets a segment of the strip to an HSBK value. If the device supports extended multizone messages, prefer those.",
+    "fields": [
+      { "name": "start_index", "type": "Uint8",  "description": "First zone in the segment to change." },
+      { "name": "end_index",   "type": "Uint8",  "description": "Last zone in the segment to change." },
+      { "name": "hue",         "type": "Uint16", "description": "Hue component of HSBK." },
+      { "name": "saturation",  "type": "Uint16", "description": "Saturation component of HSBK." },
+      { "name": "brightness",  "type": "Uint16", "description": "Brightness component of HSBK." },
+      { "name": "kelvin",      "type": "Uint16", "description": "Color temperature in Kelvin." },
+      { "name": "duration",    "type": "Uint32", "description": "Transition time in milliseconds." },
+      { "name": "apply",       "type": "Uint8",  "description": "See MultiZoneApplicationRequest enum." }
+    ],
+    "reply_type": 506,
+    "requires_capability": "Linear Zones"
+  },
+  {
+    "packet_number": 502,
+    "name": "GetColorZones",
+    "direction": "get",
+    "category": "MultiZone",
+    "description": "Requests HSBK values for zones. Returns StateZone (503) when only one zone matches, or one or more StateMultiZone (506) messages otherwise. Set start_index=0 and end_index=255 to get all zones.",
+    "fields": [
+      { "name": "start_index", "type": "Uint8", "description": "First zone to get information from." },
+      { "name": "end_index",   "type": "Uint8", "description": "Last zone to get information from." }
+    ],
+    "reply_type": [503, 506],
+    "requires_capability": "Linear Zones"
+  },
+  {
+    "packet_number": 503,
+    "name": "StateZone",
+    "direction": "state",
+    "category": "MultiZone",
+    "description": "HSBK value of a single zone on the strip.",
+    "fields": [
+      { "name": "zones_count", "type": "Uint8",  "description": "Total number of zones on the strip." },
+      { "name": "zone_index",  "type": "Uint8",  "description": "Zone this packet refers to." },
+      { "name": "hue",         "type": "Uint16", "description": "Hue component of HSBK." },
+      { "name": "saturation",  "type": "Uint16", "description": "Saturation component of HSBK." },
+      { "name": "brightness",  "type": "Uint16", "description": "Brightness component of HSBK." },
+      { "name": "kelvin",      "type": "Uint16", "description": "Color temperature in Kelvin." }
+    ],
+    "reply_to": [502, 501],
+    "requires_capability": "Linear Zones"
+  },
+  {
+    "packet_number": 506,
+    "name": "StateMultiZone",
+    "direction": "state",
+    "category": "MultiZone",
+    "description": "A segment of 8 HSBK values on the strip.",
+    "fields": [
+      { "name": "zones_count", "type": "Uint8",    "description": "Total number of zones on the strip." },
+      { "name": "zone_index",  "type": "Uint8",    "description": "First zone represented by this packet." },
+      { "name": "colors",      "type": "Color[8]", "description": "HSBK values of the 8 zones this packet refers to." }
+    ],
+    "reply_to": [502, 501],
+    "requires_capability": "Linear Zones"
+  },
+  {
+    "packet_number": 507,
+    "name": "GetMultiZoneEffect",
+    "direction": "get",
+    "category": "MultiZone",
+    "description": "Requests the currently running multizone firmware effect.",
+    "fields": [],
+    "reply_type": 509,
+    "requires_capability": "Linear Zones"
+  },
+  {
+    "packet_number": 508,
+    "name": "SetMultiZoneEffect",
+    "direction": "set",
+    "category": "MultiZone",
+    "description": "Starts a multizone firmware effect on the device.",
+    "fields": [
+      { "name": "instanceid", "type": "Uint32",   "description": "Unique number identifying this effect." },
+      { "name": "type",       "type": "Uint8",    "description": "Effect type. See MultiZoneEffectType enum." },
+      { "name": "reserved6",  "type": "Reserved", "description": "2 reserved bytes, set to 0." },
+      { "name": "speed",      "type": "Uint32",   "description": "Time for one cycle of the effect in milliseconds." },
+      { "name": "duration",   "type": "Uint64",   "description": "Time the effect will run for in nanoseconds." },
+      { "name": "reserved7",  "type": "Reserved", "description": "4 reserved bytes, set to 0." },
+      { "name": "reserved8",  "type": "Reserved", "description": "4 reserved bytes, set to 0." },
+      { "name": "parameters", "type": "Bytes",    "description": "32 bytes (8 x Uint32) of effect parameters. For MOVE, the second field is a Uint32 Direction enum. Ignored by all other effects." }
+    ],
+    "reply_type": 509,
+    "requires_capability": "Linear Zones"
+  },
+  {
+    "packet_number": 509,
+    "name": "StateMultiZoneEffect",
+    "direction": "state",
+    "category": "MultiZone",
+    "description": "Current firmware effect running on the device.",
+    "fields": [
+      { "name": "instanceid", "type": "Uint32",   "description": "Unique value identifying this effect." },
+      { "name": "type",       "type": "Uint8",    "description": "See MultiZoneEffectType enum." },
+      { "name": "reserved6",  "type": "Reserved", "description": "2 reserved bytes, set to 0." },
+      { "name": "speed",      "type": "Uint32",   "description": "Time for one cycle of the effect in milliseconds." },
+      { "name": "duration",   "type": "Uint64",   "description": "Time remaining in the current effect in nanoseconds." },
+      { "name": "reserved7",  "type": "Reserved", "description": "4 reserved bytes, set to 0." },
+      { "name": "reserved8",  "type": "Reserved", "description": "4 reserved bytes, set to 0." },
+      { "name": "parameters", "type": "Bytes",    "description": "32 bytes of parameters that were used in the request." }
+    ],
+    "reply_to": [507, 508],
+    "requires_capability": "Linear Zones"
+  },
+  {
+    "packet_number": 510,
+    "name": "SetExtendedColorZones",
+    "direction": "set",
+    "category": "MultiZone",
+    "description": "Changes HSBK values for all zones in one message. For strips with more than 82 zones, send multiple messages with different zone_index values.",
+    "fields": [
+      { "name": "duration",     "type": "Uint32",    "description": "Transition time in milliseconds." },
+      { "name": "apply",        "type": "Uint8",     "description": "Whether to apply the change now. See MultiZoneExtendedApplicationRequest enum." },
+      { "name": "zone_index",   "type": "Uint16",    "description": "First zone to apply colors from. Use multiple messages for strips with more than 82 zones." },
+      { "name": "colors_count", "type": "Uint8",     "description": "Number of colors in the colors field to apply." },
+      { "name": "colors",       "type": "Color[82]", "description": "HSBK values to set on the strip." }
+    ],
+    "reply_type": 512,
+    "requires_capability": "Extended Linear Zones"
+  },
+  {
+    "packet_number": 511,
+    "name": "GetExtendedColorZones",
+    "direction": "get",
+    "category": "MultiZone",
+    "description": "Requests HSBK values for every zone. Returns multiple StateExtendedColorZones (512) messages if the strip has more than 82 zones.",
+    "fields": [],
+    "reply_type": 512,
+    "requires_capability": "Extended Linear Zones"
+  },
+  {
+    "packet_number": 512,
+    "name": "StateExtendedColorZones",
+    "direction": "state",
+    "category": "MultiZone",
+    "description": "HSBK values of the zones specified in the request.",
+    "fields": [
+      { "name": "zones_count",  "type": "Uint16",    "description": "Total number of zones on the strip." },
+      { "name": "zone_index",   "type": "Uint16",    "description": "First zone in this packet. Indicates relative positioning for strips with more than 82 zones." },
+      { "name": "colors_count", "type": "Uint8",     "description": "Number of entries in the colors array that map to real zones." },
+      { "name": "colors",       "type": "Color[82]", "description": "HSBK values currently set on each zone." }
+    ],
+    "reply_to": [510, 511],
+    "requires_capability": "Extended Linear Zones"
+  },
+  {
+    "packet_number": 701,
+    "name": "GetDeviceChain",
+    "direction": "get",
+    "category": "Tile",
+    "description": "Requests information about all devices in the chain. For LIFX Tiles up to 5 devices; for the LIFX Candle always 1.",
+    "fields": [],
+    "reply_type": 702,
+    "requires_capability": "Matrix Zones"
+  },
+  {
+    "packet_number": 702,
+    "name": "StateDeviceChain",
+    "direction": "state",
+    "category": "Tile",
+    "description": "Information about each device in the chain.",
+    "fields": [
+      { "name": "start_index",        "type": "Uint8",    "description": "Index of the first device in the chain this packet refers to." },
+      { "name": "tile_devices",       "type": "Tile[16]", "description": "Information for each device in the chain. See Tile structure." },
+      { "name": "tile_devices_count", "type": "Uint8",    "description": "Number of entries in tile_devices that map to real devices." }
+    ],
+    "reply_to": [701],
+    "requires_capability": "Matrix Zones"
+  },
+  {
+    "packet_number": 703,
+    "name": "SetUserPosition",
+    "direction": "set",
+    "category": "Tile",
+    "description": "Sets the position of a device in the chain relative to others. No response packet even if res_required=1.",
+    "fields": [
+      { "name": "tile_index", "type": "Uint8",    "description": "Device to change, 0-indexed from the device closest to the controller." },
+      { "name": "reserved6",  "type": "Reserved", "description": "2 reserved bytes, set to 0." },
+      { "name": "user_x",     "type": "Float",    "description": "See Tile Positions documentation." },
+      { "name": "user_y",     "type": "Float",    "description": "See Tile Positions documentation." }
+    ],
+    "requires_capability": "Matrix Zones"
+  },
+  {
+    "packet_number": 707,
+    "name": "Get64",
+    "direction": "get",
+    "category": "Tile",
+    "description": "Requests HSBK values of all zones in devices in the chain. Returns one or more State64 (711) messages up to the count specified by length.",
+    "fields": [
+      { "name": "tile_index", "type": "Uint8",    "description": "First item in the chain to get zones from." },
+      { "name": "length",     "type": "Uint8",    "description": "Number of tiles after tile_index to get HSBK values from." },
+      { "name": "reserved6",  "type": "Reserved", "description": "1 reserved byte, set to 0." },
+      { "name": "x",          "type": "Uint8",    "description": "X value to start from. Usually 0." },
+      { "name": "y",          "type": "Uint8",    "description": "Y value to start from. Usually 0." },
+      { "name": "width",      "type": "Uint8",    "description": "Width of each item in the chain. 8 for LIFX Tile; 5 for LIFX Candle." }
+    ],
+    "reply_type": 711,
+    "requires_capability": "Matrix Zones"
+  },
+  {
+    "packet_number": 711,
+    "name": "State64",
+    "direction": "state",
+    "category": "Tile",
+    "description": "Current HSBK values of the zones in a single device.",
+    "fields": [
+      { "name": "tile_index", "type": "Uint8",     "description": "Index of the device in the chain, 0-based from device closest to the controller." },
+      { "name": "reserved6",  "type": "Reserved",  "description": "1 reserved byte, set to 0." },
+      { "name": "x",          "type": "Uint8",     "description": "X coordinate the colors start from." },
+      { "name": "y",          "type": "Uint8",     "description": "Y coordinate the colors start from." },
+      { "name": "width",      "type": "Uint8",     "description": "Width of each row." },
+      { "name": "colors",     "type": "Color[64]", "description": "HSBK values for the zones." }
+    ],
+    "reply_to": [707, 715],
+    "requires_capability": "Matrix Zones"
+  },
+  {
+    "packet_number": 715,
+    "name": "Set64",
+    "direction": "set",
+    "category": "Tile",
+    "description": "Sets up to 64 HSBK values on the device. No response packet even if res_required=1.",
+    "fields": [
+      { "name": "tile_index", "type": "Uint8",     "description": "Device to change, 0-indexed from the device closest to the controller." },
+      { "name": "length",     "type": "Uint8",     "description": "Number of devices in the chain to change starting from tile_index." },
+      { "name": "fb_index",   "type": "Uint8",     "description": "Frame buffer index to update. Normally 0 for the visible frame." },
+      { "name": "x",          "type": "Uint8",     "description": "X coordinate to start applying colors from. Usually 0." },
+      { "name": "y",          "type": "Uint8",     "description": "Y coordinate to start applying colors from. Usually 0." },
+      { "name": "width",      "type": "Uint8",     "description": "Width of the square to apply colors to. 8 for LIFX Tile; 5 for LIFX Candle." },
+      { "name": "duration",   "type": "Uint32",    "description": "Transition time in milliseconds." },
+      { "name": "colors",     "type": "Color[64]", "description": "HSBK values to assign to each zone." }
+    ],
+    "requires_capability": "Matrix Zones"
+  },
+  {
+    "packet_number": 716,
+    "name": "CopyFrameBuffer",
+    "direction": "set",
+    "category": "Tile",
+    "description": "Copies zones from one frame buffer to another. Useful for smooth transitions on LIFX Ceiling 26\" by staging in a non-visible buffer then copying to the visible one.",
+    "fields": [
+      { "name": "tile_index",   "type": "Uint8",    "description": "Device to change, 0-indexed from the device closest to the controller." },
+      { "name": "length",       "type": "Uint8",    "description": "Number of devices to copy, starting from tile_index." },
+      { "name": "src_fb_index", "type": "Uint8",    "description": "Source frame buffer index." },
+      { "name": "dst_fb_index", "type": "Uint8",    "description": "Destination frame buffer index." },
+      { "name": "src_x",        "type": "Uint8",    "description": "Origin x for source frame buffer." },
+      { "name": "src_y",        "type": "Uint8",    "description": "Origin y for source frame buffer." },
+      { "name": "dst_x",        "type": "Uint8",    "description": "Origin x for destination frame buffer." },
+      { "name": "dst_y",        "type": "Uint8",    "description": "Origin y for destination frame buffer." },
+      { "name": "width",        "type": "Uint8",    "description": "Width of the rectangle to copy." },
+      { "name": "height",       "type": "Uint8",    "description": "Height of the rectangle to copy." },
+      { "name": "duration",     "type": "Uint32",   "description": "Transition time in milliseconds. Only relevant when dst_fb_index is 0." },
+      { "name": "reserved1",    "type": "Reserved", "description": "1 reserved byte, set to 0." }
+    ],
+    "requires_capability": "Matrix Zones"
+  },
+  {
+    "packet_number": 718,
+    "name": "GetTileEffect",
+    "direction": "get",
+    "category": "Tile",
+    "description": "Requests the firmware effect currently running on the device.",
+    "fields": [
+      { "name": "reserved6", "type": "Reserved", "description": "1 reserved byte, set to 0." },
+      { "name": "reserved7", "type": "Reserved", "description": "1 reserved byte, set to 0." }
+    ],
+    "reply_type": 720,
+    "requires_capability": "Matrix Zones"
+  },
+  {
+    "packet_number": 719,
+    "name": "SetTileEffect",
+    "direction": "set",
+    "category": "Tile",
+    "description": "Starts a firmware effect on the device. The Sky effect requires LIFX Ceiling running firmware 4.4 or higher.",
+    "fields": [
+      { "name": "reserved0",          "type": "Reserved",          "description": "1 reserved byte, set to 0." },
+      { "name": "reserved1",          "type": "Reserved",          "description": "1 reserved byte, set to 0." },
+      { "name": "instanceid",         "type": "Uint32",            "description": "Unique number identifying this effect." },
+      { "name": "type",               "type": "Uint8",             "description": "Effect type. See TileEffectType enum." },
+      { "name": "speed",              "type": "Uint32",            "description": "Time for one cycle in milliseconds." },
+      { "name": "duration",           "type": "Uint64",            "description": "Time the effect will run for in nanoseconds." },
+      { "name": "reserved2",          "type": "Reserved",          "description": "4 reserved bytes, set to 0." },
+      { "name": "reserved3",          "type": "Reserved",          "description": "4 reserved bytes, set to 0." },
+      { "name": "skyType",            "type": "TileEffectSkyType", "description": "Only used on SKY effect. See TileEffectSkyType enum." },
+      { "name": "reserved4",          "type": "Reserved",          "description": "3 reserved bytes, set to 0." },
+      { "name": "cloudSaturationMin", "type": "Bytes",             "description": "1 byte. Only used on SKY effect with CLOUDS. Recommended default is 50." },
+      { "name": "reserved5",          "type": "Reserved",          "description": "3 reserved bytes, set to 0." },
+      { "name": "reserved6",          "type": "Reserved",          "description": "24 reserved bytes. Currently ignored by all firmware effects." },
+      { "name": "palette_count",      "type": "Uint8",             "description": "Number of colors in palette that are relevant." },
+      { "name": "palette",            "type": "Color[16]",         "description": "Colors for the effect. For MORPH: palette colors. For SKY: see TileEffectSkyPalette offsets." }
+    ],
+    "reply_type": 720,
+    "requires_capability": "Matrix Zones"
+  },
+  {
+    "packet_number": 720,
+    "name": "StateTileEffect",
+    "direction": "state",
+    "category": "Tile",
+    "description": "Current firmware effect running on the device.",
+    "fields": [
+      { "name": "reserved0",          "type": "Reserved",          "description": "1 reserved byte, set to 0." },
+      { "name": "instanceid",         "type": "Uint32",            "description": "Unique value identifying the request." },
+      { "name": "type",               "type": "Uint8",             "description": "See TileEffectType enum." },
+      { "name": "speed",              "type": "Uint32",            "description": "Time for one cycle in milliseconds." },
+      { "name": "duration",           "type": "Uint64",            "description": "Time remaining in the current effect in nanoseconds." },
+      { "name": "reserved1",          "type": "Reserved",          "description": "4 reserved bytes, set to 0." },
+      { "name": "reserved2",          "type": "Reserved",          "description": "4 reserved bytes, set to 0." },
+      { "name": "skyType",            "type": "TileEffectSkyType", "description": "Only used on SKY effect." },
+      { "name": "reserved3",          "type": "Reserved",          "description": "3 reserved bytes, set to 0." },
+      { "name": "cloudSaturationMin", "type": "Bytes",             "description": "1 byte. Only used on SKY effect with CLOUDS." },
+      { "name": "reserved4",          "type": "Reserved",          "description": "3 reserved bytes, set to 0." },
+      { "name": "reserved5",          "type": "Reserved",          "description": "24 reserved bytes. Currently ignored by all firmware effects." },
+      { "name": "palette_count",      "type": "Uint8",             "description": "Number of colors in palette that are relevant." },
+      { "name": "palette",            "type": "Color[16]",         "description": "Colors specified for the effect." }
+    ],
+    "reply_to": [718, 719],
+    "requires_capability": "Matrix Zones"
+  },
+  {
+    "packet_number": 816,
+    "name": "GetRPower",
+    "direction": "get",
+    "category": "Relay",
+    "description": "Requests the power state of a relay on a switch device.",
+    "fields": [
+      { "name": "relay_index", "type": "Uint8", "description": "The relay on the switch, 0-indexed." }
+    ],
+    "reply_type": 818,
+    "requires_capability": "Relays"
+  },
+  {
+    "packet_number": 817,
+    "name": "SetRPower",
+    "direction": "set",
+    "category": "Relay",
+    "description": "Sets the power state of a relay on a switch device. Current models do not support dimming — only 0 (off) and 65535 (on) are valid.",
+    "fields": [
+      { "name": "relay_index", "type": "Uint8",  "description": "The relay on the switch, 0-indexed." },
+      { "name": "level",       "type": "Uint16", "description": "New value of the relay. 0 is off; 65535 is on." }
+    ],
+    "reply_type": 818,
+    "requires_capability": "Relays"
+  },
+  {
+    "packet_number": 818,
+    "name": "StateRPower",
+    "direction": "state",
+    "category": "Relay",
+    "description": "Current power state of a relay. Current models do not support dimming — only 0 (off) and 65535 (on) are valid.",
+    "fields": [
+      { "name": "relay_index", "type": "Uint8",  "description": "The relay on the switch, 0-indexed." },
+      { "name": "level",       "type": "Uint16", "description": "Current value of the relay." }
+    ],
+    "reply_to": [816, 817],
+    "requires_capability": "Relays"
+  }
+]
