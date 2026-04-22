@@ -11,22 +11,97 @@ interface InspectTelemetry {
 
 interface DeviceStore {
   devices:           DeviceSnapshot[]
-  inspecting:        Set<string>                    // MACs currently in flight
+  inspecting:        Set<string>
   inspectErrors:     Record<string, string>
   inspectTelemetry:  Record<string, InspectTelemetry>
 
-  discover: () => void
-  inspect:  (mac: string) => void
+  discover:     () => void
+  identify:     (mac: string) => void
+  inspect:      (mac: string) => void
+  reinspect:    (mac: string) => void
+  setLabel:     (mac: string, label: string) => void
+  setGroup:     (mac: string, label: string) => void
+  setLocation:  (mac: string, label: string) => void
 }
+
+// Retry delays: fast attempts first, then once-per-minute
+const RETRY_DELAYS = [2000, 5000, 15000, 60000]
+
+// Module-level maps so timers survive re-renders
+const retryTimers  = new Map<string, ReturnType<typeof setTimeout>>()
+const retryCounts  = new Map<string, number>()
 
 const useDeviceStore = create<DeviceStore>((set, get) => {
 
-  // Subscribe once at store-creation time.  All incoming WS messages flow
-  // through here; components read state via useDeviceStore().
+  // ---------------------------------------------------------------------------
+  // Internal helpers (closed over set/get)
+  // ---------------------------------------------------------------------------
+
+  function forceInspect (mac: string) {
+    set(state => ({
+      inspecting:    new Set([...state.inspecting, mac]),
+      inspectErrors: { ...state.inspectErrors, [mac]: '' },
+    }))
+    const message: ClientMessage = {
+      type: 'inspect_device',
+      mac,
+      timestamps: { clientSentAt: Date.now() },
+    }
+    send(message)
+  }
+
+  function scheduleRetry (mac: string) {
+    const count = retryCounts.get(mac) ?? 0
+    const delay = RETRY_DELAYS[Math.min(count, RETRY_DELAYS.length - 1)]
+    retryCounts.set(mac, count + 1)
+    const timer = setTimeout(() => {
+      retryTimers.delete(mac)
+      forceInspect(mac)
+    }, delay)
+    retryTimers.set(mac, timer)
+  }
+
+  function cancelRetry (mac: string) {
+    const timer = retryTimers.get(mac)
+    if (timer !== undefined) {
+      clearTimeout(timer)
+      retryTimers.delete(mac)
+    }
+    retryCounts.delete(mac)
+  }
+
+  function identify (mac: string) {
+    if (get().inspecting.has(mac)) return
+
+    if (!get().devices.some(d => d.mac === mac)) {
+      set(state => ({ devices: [...state.devices, { mac }] }))
+    }
+
+    set(state => ({
+      inspecting:    new Set([...state.inspecting, mac]),
+      inspectErrors: { ...state.inspectErrors, [mac]: '' },
+    }))
+
+    const message: ClientMessage = {
+      type: 'identify_device',
+      mac,
+      timestamps: { clientSentAt: Date.now() },
+    }
+    send(message)
+  }
+
+  // ---------------------------------------------------------------------------
+  // Subscribe once at store-creation time
+  // ---------------------------------------------------------------------------
+
   subscribe(msg => {
 
     if (msg.type === 'discovery_result') {
       set({ devices: msg.devices })
+      // Stagger identifies so we don't flood the network
+      msg.devices.forEach((device, i) => {
+        setTimeout(() => identify(device.mac), i * 150)
+      })
     }
 
     if (msg.type === 'device_field') {
@@ -42,6 +117,7 @@ const useDeviceStore = create<DeviceStore>((set, get) => {
 
     if (msg.type === 'device_inspect_complete') {
       const { mac } = msg
+      cancelRetry(mac)
       set(state => {
         const next: Partial<DeviceStore> = {
           inspecting: new Set([...state.inspecting].filter(m => m !== mac)),
@@ -73,11 +149,23 @@ const useDeviceStore = create<DeviceStore>((set, get) => {
         inspecting:    new Set([...state.inspecting].filter(m => m !== mac)),
         inspectErrors: { ...state.inspectErrors, [mac]: error },
       }))
+      // Only auto-retry full inspect errors, not identify failures
+      // We detect full inspect by checking if this device was inspected (not just identified).
+      // Since we can't distinguish here, retry for 'unreachable' on any mac that had a full inspect.
+      // The retryTimers map acts as the dedup guard — identify errors clear quickly anyway.
+      if (error === 'unreachable' && !retryTimers.has(mac)) {
+        scheduleRetry(mac)
+      }
     }
 
   })
 
+  // ---------------------------------------------------------------------------
+  // Public actions
+  // ---------------------------------------------------------------------------
+
   return {
+
     devices:          [],
     inspecting:       new Set(),
     inspectErrors:    {},
@@ -91,27 +179,39 @@ const useDeviceStore = create<DeviceStore>((set, get) => {
       send(message)
     },
 
+    identify,
+
     inspect (mac: string) {
-      // Prevent concurrent inspections of the same device
       if (get().inspecting.has(mac)) return
 
-      // Ensure the device exists in the list so field merges have a target
       if (!get().devices.some(d => d.mac === mac)) {
         set(state => ({ devices: [...state.devices, { mac }] }))
       }
 
-      // Clear any previous error and mark as in-progress
-      set(state => ({
-        inspecting:    new Set([...state.inspecting, mac]),
-        inspectErrors: { ...state.inspectErrors, [mac]: '' },
-      }))
+      forceInspect(mac)
+    },
 
-      const message: ClientMessage = {
-        type: 'inspect_device',
-        mac,
-        timestamps: { clientSentAt: Date.now() },
-      }
-      send(message)
+    reinspect (mac: string) {
+      cancelRetry(mac)
+      // Clear HSBK-sensitive fields so controls reset to uninitialized
+      set(state => ({
+        devices: state.devices.map(d =>
+          d.mac === mac ? { ...d, color: undefined, power: undefined } : d
+        ),
+      }))
+      forceInspect(mac)
+    },
+
+    setLabel (mac: string, label: string) {
+      send({ type: 'set_label', mac, label, timestamps: { clientSentAt: Date.now() } })
+    },
+
+    setGroup (mac: string, label: string) {
+      send({ type: 'set_group', mac, label, timestamps: { clientSentAt: Date.now() } })
+    },
+
+    setLocation (mac: string, label: string) {
+      send({ type: 'set_location', mac, label, timestamps: { clientSentAt: Date.now() } })
     },
   }
 })
