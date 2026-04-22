@@ -1,6 +1,13 @@
 import React, { useEffect } from 'react'
+import styled from 'styled-components'
 import { Link } from 'wouter'
 import useDeviceStore from '../store/DeviceStore'
+
+const DeviceListItem = styled.li`
+  display: flex;
+  flex-flow: row nowrap;
+  gap: 4px;
+`
 
 export default function DiscoveredDevices () {
   const { devices, discover } = useDeviceStore()
@@ -21,12 +28,13 @@ export default function DiscoveredDevices () {
       ) : (
         <ul>
           {devices.map(device => (
-            <li key={device.mac}>
+            <DeviceListItem key={device.mac}>
+              <span>{ device.location } · {device.group } · { device.label } —</span>
               <Link href={`/devices/${device.mac}`}>
                 <code>{device.mac}</code>
               </Link>
               {device.ip && ` — ${device.ip}:${device.port}`}
-            </li>
+            </DeviceListItem>
           ))}
         </ul>
       )}
