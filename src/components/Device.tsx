@@ -1,8 +1,10 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Link } from 'wouter'
 import useDeviceStore from '../store/DeviceStore'
 import type { DeviceSnapshot } from '../types/ws'
 import type { InspectTelemetry } from '../store/DeviceStore'
+
+import Hsbk from './hsbk/Hsbk'
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -59,6 +61,61 @@ function FeaturesRow ({ features }: { features: NonNullable<DeviceSnapshot['vers
   )
 }
 
+interface EditableFieldProps {
+  value?: string
+  onCommit: (next: string) => void
+}
+
+function EditableField ({ value, onCommit }: EditableFieldProps) {
+  const [editing, setEditing] = useState(false)
+  const [draft, setDraft] = useState('')
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  function startEdit () {
+    setDraft(value ?? '')
+    setEditing(true)
+    setTimeout(() => inputRef.current?.select(), 0)
+  }
+
+  function commit () {
+    const trimmed = draft.trim()
+    if (trimmed !== (value ?? '')) onCommit(trimmed)
+    setEditing(false)
+  }
+
+  function handleKeyDown (e: React.KeyboardEvent) {
+    if (e.key === 'Enter') commit()
+    if (e.key === 'Escape') setEditing(false)
+  }
+
+  if (!editing) {
+    return (
+      <>
+        {value !== undefined ? (value || <em>none</em>) : <Pending />}
+        {value !== undefined && (
+          <button onClick={startEdit} style={{ marginLeft: '0.5em', fontSize: '0.8em' }}>
+            edit
+          </button>
+        )}
+      </>
+    )
+  }
+
+  return (
+    <>
+      <input
+        ref={inputRef}
+        value={draft}
+        onChange={e => setDraft(e.target.value)}
+        onKeyDown={handleKeyDown}
+        style={{ marginRight: '0.25em' }}
+      />
+      <button onClick={commit}>save</button>
+      <button onClick={() => setEditing(false)} style={{ marginLeft: '0.25em' }}>cancel</button>
+    </>
+  )
+}
+
 function Telemetry ({ t }: { t: InspectTelemetry }) {
   const clientToServer   = t.serverReceivedAt  - t.clientSentAt
   const serverQueryTime  = t.serverRespondedAt - t.serverReceivedAt
@@ -80,16 +137,27 @@ function Telemetry ({ t }: { t: InspectTelemetry }) {
 interface Props { mac: string }
 
 export default function Device ({ mac }: Props) {
-  const { devices, inspecting, inspectErrors, inspectTelemetry, inspect } = useDeviceStore()
+  const { devices, inspecting, inspectErrors, inspectTelemetry, inspect, reinspect, setLabel, setGroup, setLocation } = useDeviceStore()
+  const [reinspectCount, setReinspectCount] = useState(0)
+  const [snapshot, setSnapshot] = useState({})
 
-  const snapshot = devices.find(d => d.mac === mac)
-  const loading  = inspecting.has(mac)
-  const error    = inspectErrors[mac]
+  // const snapshot  = devices.find(d => d.mac === mac)
+  const loading   = inspecting.has(mac)
+  const error     = inspectErrors[mac]
   const telemetry = inspectTelemetry[mac]
 
   useEffect(() => {
     inspect(mac)
   }, [mac])
+
+  useEffect(() => {
+    setSnapshot(devices.find(d => d.mac === mac))
+  }, [devices])
+
+  function handleReinspect () {
+    reinspect(mac)
+    setReinspectCount(n => n + 1)
+  }
 
   return (
     <main>
@@ -103,6 +171,7 @@ export default function Device ({ mac }: Props) {
           : error
             ? ` · error: ${error}`
             : ' · fully loaded'}
+        {!loading && <> · <button onClick={handleReinspect}>re-inspect</button></>}
       </p>
 
       {telemetry && <Telemetry t={telemetry} />}
@@ -123,15 +192,15 @@ export default function Device ({ mac }: Props) {
           {/* Identity */}
           <tr>
             <th scope="row">Label</th>
-            <td>{snapshot?.label ?? <Pending />}</td>
+            <td><EditableField value={snapshot?.label} onCommit={v => setLabel(mac, v)} /></td>
           </tr>
           <tr>
             <th scope="row">Group</th>
-            <td>{snapshot?.group ?? <Pending />}</td>
+            <td><EditableField value={snapshot?.group} onCommit={v => setGroup(mac, v)} /></td>
           </tr>
           <tr>
             <th scope="row">Location</th>
-            <td>{snapshot?.location ?? <Pending />}</td>
+            <td><EditableField value={snapshot?.location} onCommit={v => setLocation(mac, v)} /></td>
           </tr>
 
           {/* Hardware */}
@@ -177,6 +246,8 @@ export default function Device ({ mac }: Props) {
 
         </tbody>
       </table>
+      <hr/>
+      <Hsbk key={reinspectCount} mac={mac} color={snapshot?.color} />
     </main>
   )
 }
