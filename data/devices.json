@@ -1,0 +1,446 @@
+[
+  {
+    "mac": "d073d5844b7e",
+    "ip": "192.168.0.66",
+    "port": 56700,
+    "label": "North",
+    "group": "Analog Room",
+    "location": "sherman",
+    "color": {
+      "hue": 0,
+      "saturation": 0.1,
+      "brightness": 0.795,
+      "kelvin": 2400
+    },
+    "power": {
+      "level": 65535,
+      "on": true
+    },
+    "firmware": {
+      "version_major": 4,
+      "version_minor": 5,
+      "build": "1713226249000000000"
+    },
+    "wifi": {
+      "signal": 0.000050118702347390354,
+      "rssi": -43,
+      "quality": "Good signal"
+    },
+    "version": {
+      "vendor": 1,
+      "product": 181
+    },
+    "info": {
+      "time": "1392324000000",
+      "uptime_ns": "1392324000000",
+      "downtime_ns": "0"
+    }
+  },
+  {
+    "mac": "d073d586ae33",
+    "ip": "192.168.0.126",
+    "port": 56700,
+    "label": "South",
+    "group": "Analog Room",
+    "location": "sherman",
+    "color": {
+      "hue": 0,
+      "saturation": 0.1,
+      "brightness": 0.795,
+      "kelvin": 2400
+    },
+    "power": {
+      "level": 65535,
+      "on": true
+    },
+    "firmware": {
+      "version_major": 4,
+      "version_minor": 5,
+      "build": "1713226249000000000"
+    },
+    "wifi": {
+      "signal": 0.00012589251855388284,
+      "rssi": -39,
+      "quality": "Good signal"
+    },
+    "version": {
+      "vendor": 1,
+      "product": 181
+    },
+    "info": {
+      "time": "1392218000000",
+      "uptime_ns": "1392218000000",
+      "downtime_ns": "0"
+    }
+  },
+  {
+    "mac": "d073d5845633",
+    "ip": "192.168.0.102",
+    "port": 56700,
+    "label": "back deck",
+    "group": "exterior",
+    "location": "sherman",
+    "color": {
+      "hue": 0,
+      "saturation": 0,
+      "brightness": 0.2030060273136492,
+      "kelvin": 3000
+    },
+    "power": {
+      "level": 0,
+      "on": false
+    },
+    "firmware": {
+      "version_major": 4,
+      "version_minor": 112,
+      "build": "1753699325000000000"
+    },
+    "wifi": {
+      "signal": 0.0000015848925158934435,
+      "rssi": -58,
+      "quality": "Good signal"
+    },
+    "version": {
+      "vendor": 1,
+      "product": 181
+    },
+    "info": {
+      "time": "500977797000000",
+      "uptime_ns": "500977797000000",
+      "downtime_ns": "0"
+    }
+  },
+  {
+    "mac": "d073d56a86df",
+    "ip": "192.168.0.160",
+    "port": 56700,
+    "label": "se",
+    "group": "dining",
+    "location": "sure, man",
+    "color": {
+      "hue": 0,
+      "saturation": 0,
+      "brightness": 0.2,
+      "kelvin": 3000
+    },
+    "power": {
+      "level": 0,
+      "on": false
+    },
+    "firmware": {
+      "version_major": 3,
+      "version_minor": 70,
+      "build": "1604880106000000000"
+    },
+    "wifi": {
+      "signal": 0.00009999999747378752,
+      "rssi": -40,
+      "quality": "Good signal"
+    },
+    "version": {
+      "vendor": 1,
+      "product": 91
+    },
+    "info": {
+      "time": "11062968043135000",
+      "uptime_ns": "11062968043135000",
+      "downtime_ns": "0"
+    }
+  },
+  {
+    "mac": "d073d5d1f72a",
+    "ip": "192.168.0.150",
+    "port": 56700,
+    "label": "vintage",
+    "group": "living",
+    "location": "sure, man",
+    "color": {
+      "hue": 0,
+      "saturation": 0,
+      "brightness": 0.6520027466239414,
+      "kelvin": 3000
+    },
+    "power": {
+      "level": 65535,
+      "on": true
+    },
+    "firmware": {
+      "version_major": 3,
+      "version_minor": 90,
+      "build": "1665979694000000000"
+    },
+    "wifi": {
+      "signal": 0.000050118702347390354,
+      "rssi": -43,
+      "quality": "Good signal"
+    },
+    "version": {
+      "vendor": 1,
+      "product": 129
+    },
+    "info": {
+      "time": "1921524980803000",
+      "uptime_ns": "1921524980803000",
+      "downtime_ns": "0"
+    }
+  },
+  {
+    "mac": "d073d5686149",
+    "ip": "192.168.0.237",
+    "port": 56700,
+    "label": "sw",
+    "group": "dining",
+    "location": "sure, man",
+    "color": {
+      "hue": 0,
+      "saturation": 0,
+      "brightness": 0.2,
+      "kelvin": 3000
+    },
+    "power": {
+      "level": 0,
+      "on": false
+    },
+    "firmware": {
+      "version_major": 3,
+      "version_minor": 70,
+      "build": "1604880106000000000"
+    },
+    "wifi": {
+      "signal": 0.000050118702347390354,
+      "rssi": -43,
+      "quality": "Good signal"
+    },
+    "version": {
+      "vendor": 1,
+      "product": 91
+    },
+    "info": {
+      "time": "11062882688144000",
+      "uptime_ns": "11062882688144000",
+      "downtime_ns": "0"
+    }
+  },
+  {
+    "mac": "d073d569f6e4",
+    "ip": "192.168.0.4",
+    "port": 56700,
+    "label": "ne",
+    "group": "dining",
+    "location": "sure, man",
+    "color": {
+      "hue": 0,
+      "saturation": 0,
+      "brightness": 0.2,
+      "kelvin": 3000
+    },
+    "power": {
+      "level": 0,
+      "on": false
+    },
+    "firmware": {
+      "version_major": 3,
+      "version_minor": 70,
+      "build": "1604880106000000000"
+    },
+    "wifi": {
+      "signal": 0.00006309576565399766,
+      "rssi": -42,
+      "quality": "Good signal"
+    },
+    "version": {
+      "vendor": 1,
+      "product": 91
+    },
+    "info": {
+      "time": "11062895683156000",
+      "uptime_ns": "11062895683156000",
+      "downtime_ns": "0"
+    }
+  },
+  {
+    "mac": "d073d56959b6",
+    "ip": "192.168.0.155",
+    "port": 56700,
+    "label": "nw",
+    "group": "dining",
+    "location": "sure, man",
+    "color": {
+      "hue": 0,
+      "saturation": 0,
+      "brightness": 0.2,
+      "kelvin": 3000
+    },
+    "power": {
+      "level": 0,
+      "on": false
+    },
+    "firmware": {
+      "version_major": 3,
+      "version_minor": 70,
+      "build": "1604880106000000000"
+    },
+    "wifi": {
+      "signal": 0.000050118702347390354,
+      "rssi": -43,
+      "quality": "Good signal"
+    },
+    "version": {
+      "vendor": 1,
+      "product": 91
+    },
+    "info": {
+      "time": "11062881148164000",
+      "uptime_ns": "11062881148164000",
+      "downtime_ns": "0"
+    }
+  },
+  {
+    "mac": "d073d568290f",
+    "ip": "192.168.0.39",
+    "port": 56700,
+    "label": "front porch",
+    "group": "exterior",
+    "location": "sure, man",
+    "color": {
+      "hue": 0,
+      "saturation": 0,
+      "brightness": 0.5000076295109483,
+      "kelvin": 3000
+    },
+    "power": {
+      "level": 0,
+      "on": false
+    },
+    "firmware": {
+      "version_major": 3,
+      "version_minor": 70,
+      "build": "1604880106000000000"
+    },
+    "wifi": {
+      "signal": 0.0000015848925158934435,
+      "rssi": -58,
+      "quality": "Good signal"
+    },
+    "version": {
+      "vendor": 1,
+      "product": 91
+    },
+    "info": {
+      "time": "4941127909465000",
+      "uptime_ns": "4941127909465000",
+      "downtime_ns": "0"
+    }
+  },
+  {
+    "mac": "d073d5732c43",
+    "ip": "192.168.0.139",
+    "port": 56700,
+    "label": "gnomes",
+    "group": "living",
+    "location": "sure, man",
+    "color": {
+      "hue": 0,
+      "saturation": 0,
+      "brightness": 0.6520027466239414,
+      "kelvin": 3000
+    },
+    "power": {
+      "level": 0,
+      "on": false
+    },
+    "firmware": {
+      "version_major": 3,
+      "version_minor": 90,
+      "build": "1665979694000000000"
+    },
+    "wifi": {
+      "signal": 0.10000000149011612,
+      "rssi": -10,
+      "quality": "Good signal"
+    },
+    "version": {
+      "vendor": 1,
+      "product": 91
+    },
+    "info": {
+      "time": "11041610854188000",
+      "uptime_ns": "11041610854188000",
+      "downtime_ns": "0"
+    }
+  },
+  {
+    "mac": "d073d572e13e",
+    "ip": "192.168.0.133",
+    "port": 56700,
+    "label": "catch-all",
+    "group": "living",
+    "location": "sure, man",
+    "color": {
+      "hue": 0,
+      "saturation": 0,
+      "brightness": 0.6520027466239414,
+      "kelvin": 3000
+    },
+    "power": {
+      "level": 0,
+      "on": false
+    },
+    "firmware": {
+      "version_major": 3,
+      "version_minor": 90,
+      "build": "1665979694000000000"
+    },
+    "wifi": {
+      "signal": 0.00003162277789670043,
+      "rssi": -45,
+      "quality": "Good signal"
+    },
+    "version": {
+      "vendor": 1,
+      "product": 91
+    },
+    "info": {
+      "time": "542204570489000",
+      "uptime_ns": "542204570489000",
+      "downtime_ns": "0"
+    }
+  },
+  {
+    "mac": "d073d5d20a04",
+    "ip": "192.168.0.228",
+    "port": 56700,
+    "label": "cuck corner",
+    "group": "dining",
+    "location": "",
+    "color": {
+      "hue": 0,
+      "saturation": 0,
+      "brightness": 0.4299992370489052,
+      "kelvin": 3000
+    },
+    "power": {
+      "level": 65535,
+      "on": true
+    },
+    "firmware": {
+      "version_major": 3,
+      "version_minor": 90,
+      "build": "1665979694000000000"
+    },
+    "wifi": {
+      "signal": 0.000012589251127792522,
+      "rssi": -49,
+      "quality": "Good signal"
+    },
+    "version": {
+      "vendor": 1,
+      "product": 129
+    },
+    "info": {
+      "time": "153100758948000",
+      "uptime_ns": "153100758948000",
+      "downtime_ns": "0"
+    }
+  }
+]
