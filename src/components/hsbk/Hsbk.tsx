@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import type { Lifx } from '../../types/lifx'
-import { send } from '../../utils/useWebSocket'
+import useDeviceStore from '../../store/DeviceStore'
 import HsbkChannel from './HsbkChannel'
 
 interface Props {
@@ -17,6 +17,7 @@ interface Commanded {
 }
 
 export default function Hsbk ({ mac, color }: Props) {
+  const setColor = useDeviceStore(s => s.setColor)
   const [commanded, setCommanded] = useState<Commanded | null>(null)
   const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -35,12 +36,7 @@ export default function Hsbk ({ mac, color }: Props) {
   function emitSetColor (next: Commanded) {
     if (debounceTimer.current) clearTimeout(debounceTimer.current)
     debounceTimer.current = setTimeout(() => {
-      send({
-        type: 'set_color',
-        mac,
-        hsbk: next,
-        timestamps: { clientSentAt: Date.now() },
-      })
+      setColor(mac, next)
       debounceTimer.current = null
     }, 250)
   }

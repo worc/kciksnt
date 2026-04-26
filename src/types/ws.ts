@@ -53,6 +53,13 @@ interface SetLocation extends WebSocketMessage {
   label: string
 }
 
+interface SetPower extends WebSocketMessage {
+  type: 'set_power'
+  mac: string
+  on: boolean
+  duration: number  // ms; 0 = instant (SetPower/21), >0 = SetLightPower/117
+}
+
 export type ClientMessage =
   | Discover
   | IdentifyDevice
@@ -61,6 +68,7 @@ export type ClientMessage =
   | SetLabel
   | SetGroup
   | SetLocation
+  | SetPower
 
 // ---------------------------------------------------------------------------
 // Device snapshot — the accumulated picture of one device built up

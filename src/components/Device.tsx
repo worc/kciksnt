@@ -5,6 +5,7 @@ import type { DeviceSnapshot } from '../types/ws'
 import type { InspectTelemetry } from '../store/DeviceStore'
 
 import Hsbk from './hsbk/Hsbk'
+import PowerToggle from './PowerToggle'
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -188,7 +189,7 @@ export default function Device ({ mac }: Props) {
           {/* Light state */}
           <tr>
             <th scope="row">Power</th>
-            <td>{snapshot?.power ? (snapshot.power.on ? 'On' : 'Off') : <Pending />}</td>
+            <td><PowerToggle macs={[mac]} /></td>
           </tr>
           <tr>
             <th scope="row">Color</th>

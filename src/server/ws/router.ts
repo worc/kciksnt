@@ -8,6 +8,7 @@ import { handleSetColor } from '../handlers/setColor'
 import { handleSetLabel } from '../handlers/setLabel'
 import { handleSetGroup } from '../handlers/setGroup'
 import { handleSetLocation } from '../handlers/setLocation'
+import { handleSetPower } from '../handlers/setPower'
 
 type WSClient = { send(data: string | ArrayBuffer | Buffer): void }
 
@@ -46,6 +47,9 @@ const routes: RouteMap = {
   },
   set_location (msg, registry, udp, serverReceivedAt) {
     return handleSetLocation(msg.mac, msg.label, msg.timestamps.clientSentAt, serverReceivedAt, registry, udp)
+  },
+  set_power (msg, registry, udp, serverReceivedAt) {
+    return handleSetPower(msg.mac, msg.on, msg.duration, msg.timestamps.clientSentAt, serverReceivedAt, registry, udp)
   },
 }
 

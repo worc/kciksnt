@@ -16,15 +16,18 @@ interface DeviceStore {
   inspecting:        Set<string>
   inspectErrors:     Record<string, string>
   inspectTelemetry:  Record<string, InspectTelemetry>
+  duration:          number   // global transition duration in ms
 
-  discover:     () => void
-  identify:     (mac: string) => void
-  inspect:      (mac: string) => void
-  reinspect:    (mac: string) => void
-  setColor:     (mac: string, hsbk: Lifx.Application.Hsbk, duration?: number) => void
-  setLabel:     (mac: string, label: string) => void
-  setGroup:     (mac: string, label: string) => void
-  setLocation:  (mac: string, label: string) => void
+  discover:      () => void
+  identify:      (mac: string) => void
+  inspect:       (mac: string) => void
+  reinspect:     (mac: string) => void
+  setColor:      (mac: string, hsbk: Lifx.Application.Hsbk, duration?: number) => void
+  setPower:      (mac: string, on: boolean) => void
+  setLabel:      (mac: string, label: string) => void
+  setGroup:      (mac: string, label: string) => void
+  setLocation:   (mac: string, label: string) => void
+  setDuration:   (ms: number) => void
 }
 
 // Retry delays: fast attempts first, then once-per-minute
@@ -177,6 +180,7 @@ const useDeviceStore = create<DeviceStore>((set, get) => {
     inspecting:       new Set(),
     inspectErrors:    {},
     inspectTelemetry: {},
+    duration:         500,
 
     discover () {
       const message: ClientMessage = {
@@ -210,7 +214,11 @@ const useDeviceStore = create<DeviceStore>((set, get) => {
     },
 
     setColor (mac: string, hsbk: Lifx.Application.Hsbk, duration?: number) {
-      send({ type: 'set_color', mac, hsbk, duration, timestamps: { clientSentAt: Date.now() } })
+      send({ type: 'set_color', mac, hsbk, duration: duration ?? get().duration, timestamps: { clientSentAt: Date.now() } })
+    },
+
+    setPower (mac: string, on: boolean) {
+      send({ type: 'set_power', mac, on, duration: get().duration, timestamps: { clientSentAt: Date.now() } })
     },
 
     setLabel (mac: string, label: string) {
@@ -223,6 +231,10 @@ const useDeviceStore = create<DeviceStore>((set, get) => {
 
     setLocation (mac: string, label: string) {
       send({ type: 'set_location', mac, label, timestamps: { clientSentAt: Date.now() } })
+    },
+
+    setDuration (ms: number) {
+      set({ duration: ms })
     },
   }
 })

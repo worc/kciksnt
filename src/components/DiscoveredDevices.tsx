@@ -2,6 +2,7 @@ import React, { useEffect } from 'react'
 import styled from 'styled-components'
 import { Link } from 'wouter'
 import useDeviceStore from '../store/DeviceStore'
+import PowerToggle from './PowerToggle'
 
 const DeviceListItem = styled.li`
   display: flex;
@@ -78,6 +79,7 @@ export default function DiscoveredDevices () {
                   </Link>
                   {device.ip && ` — ${device.ip}:${device.port}`}
                   {undetectedMacs.has(device.mac) && <em> (offline)</em>}
+                  <PowerToggle macs={[device.mac]} />
                 </DeviceListItem>
               ))}
             </ul>

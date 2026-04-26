@@ -2,6 +2,7 @@ import React, { useEffect } from 'react'
 import { Link } from 'wouter'
 import useDeviceStore from '../store/DeviceStore'
 import HsbkGroupControl from './hsbk/HsbkGroupControl'
+import PowerToggle from './PowerToggle'
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -47,7 +48,11 @@ export default function GroupView ({ field, label }: Props) {
       <nav><Link href="/">← All devices</Link></nav>
 
       <h1>{title}</h1>
-      <p>{groupDevices.length} device{groupDevices.length !== 1 ? 's' : ''}</p>
+      <p>
+        {groupDevices.length} device{groupDevices.length !== 1 ? 's' : ''}
+        {' · '}
+        <PowerToggle macs={macs} />
+      </p>
 
       <HsbkGroupControl macs={macs} initialColor={initialColor} />
 
@@ -67,11 +72,7 @@ export default function GroupView ({ field, label }: Props) {
                   {device.label || <code>{device.mac}</code>}
                 </Link>
               </td>
-              <td>
-                {device.power
-                  ? (device.power.on ? 'On' : 'Off')
-                  : <span aria-busy="true">…</span>}
-              </td>
+              <td><PowerToggle macs={[device.mac]} /></td>
               <td>
                 {device.color
                   ? `${deg(device.color.hue)} · ${pct(device.color.saturation)} sat · ${pct(device.color.brightness)} · ${device.color.kelvin}K`
