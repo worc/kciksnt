@@ -9,6 +9,8 @@ import { handleSetLabel } from '../handlers/setLabel'
 import { handleSetGroup } from '../handlers/setGroup'
 import { handleSetLocation } from '../handlers/setLocation'
 import { handleSetPower } from '../handlers/setPower'
+import { SseHub } from '../sse/SseHub'
+import { handleEventStream } from '../sse/eventStream'
 
 type WSClient = { send(data: string | ArrayBuffer | Buffer): void }
 
@@ -72,6 +74,11 @@ export function createWsServer (
   // Anything handlers dispatch flows out to all connected WS clients
   registry.on('dispatch', broadcast)
 
+  // SSE transport runs in parallel with WS during the step-2 transition.
+  // The hub subscribes independently to registry 'dispatch' and owns its
+  // own debounce / ring-buffer state.
+  const sseHub = new SseHub(registry)
+
   Bun.serve({
     hostname: '0.0.0.0',
     port,
@@ -104,6 +111,11 @@ export function createWsServer (
     fetch (req, server) {
       const url = new URL(req.url)
       process.stdout.write(`${req.method} ${url.pathname}\n`)
+
+      // SSE event stream — long-lived text/event-stream response
+      if (url.pathname === '/events') {
+        return handleEventStream(req, sseHub)
+      }
 
       // WebSocket upgrade
       if (url.pathname === '/ws') {
