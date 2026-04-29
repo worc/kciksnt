@@ -45,6 +45,10 @@ export class DeviceRegistry extends EventEmitter {
     return this.knownSnapshots.get(mac)
   }
 
+  getAllSnapshots (): DeviceSnapshot[] {
+    return Array.from(this.knownSnapshots.values())
+  }
+
   /** Returns known devices whose MACs are not in detectedMacs, for folding into
    *  discovery results as offline/undetected entries. */
   getUndetectedDevices (detectedMacs: Set<string>): DiscoveredDevice[] {

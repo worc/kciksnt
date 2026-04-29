@@ -121,6 +121,16 @@ interface DeviceField extends WebSocketMessage {
   type: 'device_field'
   mac: string
   update: DeviceFieldUpdate
+  // commandId of the originating client command, when known. Lets a client
+  // distinguish its own echoed change from a foreign one (another client, a
+  // physical switch, a scheduled scene). Populated in step 3 alongside POST
+  // commands; always undefined until then.
+  origin?: string | null
+}
+
+interface Snapshot extends WebSocketMessage {
+  type: 'snapshot'
+  devices: DeviceSnapshot[]
 }
 
 interface DeviceInspectComplete extends WebSocketMessage {
@@ -150,3 +160,4 @@ export type ServerMessage =
   | DeviceInspectError
   | DevReload
   | Error
+  | Snapshot
