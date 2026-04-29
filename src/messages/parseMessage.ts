@@ -5,18 +5,18 @@ import { decodeLifxString } from '../protocol/strings'
 
 type DecodedHeader = ReturnType<typeof decodeHeader>
 
-export interface StateServicePayload   { service: number; port: number }
+export interface StateServicePayload      { service: number; port: number }
 export interface StateHostFirmwarePayload { build: bigint; version_minor: number; version_major: number }
-export interface StateWifiInfoPayload  { signal: number; rssi: number; quality: string }
+export interface StateWifiInfoPayload     { signal: number; rssi: number; quality: string }
 export interface StateWifiFirmwarePayload { build: Date; version_major: number; version_minor: number }
-export interface StatePowerPayload     { level: number; on: boolean }
-export interface StateLabelPayload     { label: string }
-export interface StateVersionPayload   { vendor: number; product: number }
-export interface StateLocationPayload  { location: Uint8Array; label: string; updated_at: bigint }
-export interface StateGroupPayload     { group: Uint8Array; label: string; updated_at: bigint }
-export interface LightStatePayload     { color: Lifx.Application.Hsbk; power: number; on: boolean; label: string }
-export interface StateLightPowerPayload { level: number; on: boolean }
-export interface StateInfoPayload      { time: bigint; uptime: bigint; downtime: bigint }
+export interface StatePowerPayload        { level: number; on: boolean }
+export interface StateLabelPayload        { label: string }
+export interface StateVersionPayload      { vendor: number; product: number }
+export interface StateLocationPayload     { location: Uint8Array; label: string; updated_at: bigint }
+export interface StateGroupPayload        { group: Uint8Array; label: string; updated_at: bigint }
+export interface LightStatePayload        { color: Lifx.Application.Hsbk; power: number; on: boolean; label: string }
+export interface StateLightPowerPayload   { level: number; on: boolean }
+export interface StateInfoPayload         { time: bigint; uptime: bigint; downtime: bigint }
 
 export type ParsedMessage =
   | { type: 3;   header: DecodedHeader; payload: StateServicePayload }
@@ -41,12 +41,12 @@ function signalQuality(signal: number): { rssi: number; quality: string } {
     if (rssi <= -80)   return { rssi, quality: 'Very bad signal' }
     if (rssi <= -70)   return { rssi, quality: 'Somewhat bad signal' }
     if (rssi <= -60)   return { rssi, quality: 'Alright signal' }
-    return               { rssi, quality: 'Good signal' }
+                       return { rssi, quality: 'Good signal' }
   }
   if (rssi <= 6)   return { rssi, quality: 'Very bad signal' }
   if (rssi <= 11)  return { rssi, quality: 'Somewhat bad signal' }
   if (rssi <= 16)  return { rssi, quality: 'Alright signal' }
-  return             { rssi, quality: 'Good signal' }
+                   return { rssi, quality: 'Good signal' }
 }
 
 export function parseMessage (data: Uint8Array): ParsedMessage {
