@@ -32,7 +32,7 @@ export default tseslint.config(
       '@stylistic/keyword-spacing': ['error', { before: true, after: true }],
       '@stylistic/no-multi-spaces': 'error',
       '@stylistic/no-trailing-spaces': 'error',
-      '@stylistic/object-property-newline': 'error',
+      '@stylistic/object-property-newline': ['error', { allowAllPropertiesOnSameLine: true }],
       '@stylistic/quotes': ['error', 'single'],
       '@stylistic/semi': ['error', 'never'],
 
