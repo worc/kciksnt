@@ -65,11 +65,11 @@ export function parseMessage (data: Uint8Array): ParsedMessage {
   switch (type) {
     case 3: return { type, header, payload: {
       service: view.getUint8(0),
-      port: view.getUint32(1, true),
+      port:    view.getUint32(1, true),
     }}
 
     case 15: return { type, header, payload: {
-      build: view.getBigUint64(0, true),
+      build:         view.getBigUint64(0, true),
       version_minor: view.getUint16(16, true),
       version_major: view.getUint16(18, true),
     }}
@@ -80,7 +80,7 @@ export function parseMessage (data: Uint8Array): ParsedMessage {
     }
 
     case 19: return { type, header, payload: {
-      build: new Date(Number(view.getBigUint64(0, true))),
+      build:         new Date(Number(view.getBigUint64(0, true))),
       version_minor: view.getUint16(16),
       version_major: view.getUint16(18),
     }}
@@ -95,21 +95,21 @@ export function parseMessage (data: Uint8Array): ParsedMessage {
     }}
 
     case 33: return { type, header, payload: {
-      vendor: view.getUint32(0, true),
+      vendor:  view.getUint32(0, true),
       product: view.getUint32(4, true),
     }}
 
     case 45: return { type, header, payload: null }
 
     case 50: return { type, header, payload: {
-      location: payloadBuf.slice(0, 16),
-      label: decodeLifxString(payloadBuf.slice(16, 48)),
+      location:   payloadBuf.slice(0, 16),
+      label:      decodeLifxString(payloadBuf.slice(16, 48)),
       updated_at: view.getBigUint64(48, true),
     }}
 
     case 53: return { type, header, payload: {
-      group: payloadBuf.slice(0, 16),
-      label: decodeLifxString(payloadBuf.slice(16, 48)),
+      group:      payloadBuf.slice(0, 16),
+      label:      decodeLifxString(payloadBuf.slice(16, 48)),
       updated_at: view.getBigUint64(48, true),
     }}
 

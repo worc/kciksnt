@@ -26,23 +26,23 @@ describe('DeviceRegistry.getAllSnapshots', () => {
     const registry = new DeviceRegistry()
     registry.setDevice('d073d5000003', { mac: 'd073d5000003', ip: '192.168.1.12', port: 56700 })
     registry.dispatch({
-      type: 'device_field',
-      mac: 'd073d5000003',
-      update: { field: 'label', value: 'Hallway' },
+      type:       'device_field',
+      mac:        'd073d5000003',
+      update:     { field: 'label', value: 'Hallway' },
       timestamps: { clientSentAt: 0, serverReceivedAt: 0, serverRespondedAt: 0 },
     })
     registry.dispatch({
-      type: 'device_field',
-      mac: 'd073d5000003',
-      update: { field: 'power', value: { level: 65535, on: true } },
+      type:       'device_field',
+      mac:        'd073d5000003',
+      update:     { field: 'power', value: { level: 65535, on: true } },
       timestamps: { clientSentAt: 0, serverReceivedAt: 0, serverRespondedAt: 0 },
     })
 
     const [snapshot] = registry.getAllSnapshots()
     expect(snapshot).toEqual({
-      mac: 'd073d5000003',
-      ip: '192.168.1.12',
-      port: 56700,
+      mac:   'd073d5000003',
+      ip:    '192.168.1.12',
+      port:  56700,
       label: 'Hallway',
       power: { level: 65535, on: true },
     })

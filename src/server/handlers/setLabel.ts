@@ -22,8 +22,8 @@ export async function handleSetLabel (
   try {
     await requestResponse(udp, device, buildSetLabel(mac, label, { ack_required: true }), 45, timeoutMs)
     registry.dispatch({
-      type: 'device_field', mac, origin,
-      update: { field: 'label', value: label },
+      type:       'device_field', mac, origin,
+      update:     { field: 'label', value: label },
       timestamps: { clientSentAt, serverReceivedAt, serverRespondedAt: Date.now() },
     })
   } catch (e) {

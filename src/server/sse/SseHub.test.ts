@@ -30,8 +30,8 @@ describe('SseHub — pass-through emission', () => {
     sent.length = 0  // discard the initial snapshot
 
     registry.dispatch({
-      type: 'discovery_result',
-      devices: [{ mac: 'd073d5000001', ip: '192.168.1.1', port: 56700 }],
+      type:       'discovery_result',
+      devices:    [{ mac: 'd073d5000001', ip: '192.168.1.1', port: 56700 }],
       timestamps: { clientSentAt: 0, serverReceivedAt: 0, serverRespondedAt: 0 },
     })
 
@@ -53,8 +53,8 @@ describe('SseHub — pass-through emission', () => {
     sent.length = 0
 
     registry.dispatch({
-      type: 'snapshot',
-      devices: [],
+      type:       'snapshot',
+      devices:    [],
       timestamps: { clientSentAt: 0, serverReceivedAt: 0, serverRespondedAt: 0 },
     })
 
@@ -75,9 +75,9 @@ describe('SseHub — device_field debouncing', () => {
     const mac = 'd073d5000010'
     for (const value of [{ level: 100, on: true }, { level: 200, on: true }, { level: 300, on: true }]) {
       registry.dispatch({
-        type: 'device_field',
+        type:       'device_field',
         mac,
-        update: { field: 'power', value },
+        update:     { field: 'power', value },
         timestamps: { clientSentAt: 0, serverReceivedAt: 0, serverRespondedAt: 0 },
       })
     }
@@ -103,15 +103,15 @@ describe('SseHub — device_field debouncing', () => {
     sent.length = 0
 
     registry.dispatch({
-      type: 'device_field',
-      mac: 'd073d5000020',
-      update: { field: 'label', value: 'A' },
+      type:       'device_field',
+      mac:        'd073d5000020',
+      update:     { field: 'label', value: 'A' },
       timestamps: { clientSentAt: 0, serverReceivedAt: 0, serverRespondedAt: 0 },
     })
     registry.dispatch({
-      type: 'device_field',
-      mac: 'd073d5000021',
-      update: { field: 'label', value: 'B' },
+      type:       'device_field',
+      mac:        'd073d5000021',
+      update:     { field: 'label', value: 'B' },
       timestamps: { clientSentAt: 0, serverReceivedAt: 0, serverRespondedAt: 0 },
     })
 
@@ -131,15 +131,15 @@ describe('SseHub — device_field debouncing', () => {
 
     const mac = 'd073d5000030'
     registry.dispatch({
-      type: 'device_field',
+      type:       'device_field',
       mac,
-      update: { field: 'label', value: 'Den' },
+      update:     { field: 'label', value: 'Den' },
       timestamps: { clientSentAt: 0, serverReceivedAt: 0, serverRespondedAt: 0 },
     })
     registry.dispatch({
-      type: 'device_field',
+      type:       'device_field',
       mac,
-      update: { field: 'group', value: 'Upstairs' },
+      update:     { field: 'group', value: 'Upstairs' },
       timestamps: { clientSentAt: 0, serverReceivedAt: 0, serverRespondedAt: 0 },
     })
 
@@ -159,8 +159,8 @@ describe('SseHub — ring buffer eviction', () => {
     // grows by one per emit regardless of message type.
     for (let i = 0; i < 5; i++) {
       registry.dispatch({
-        type: 'discovery_result',
-        devices: [{ mac: `d073d50000${i.toString().padStart(2, '0')}`, ip: '0.0.0.0', port: 0 }],
+        type:       'discovery_result',
+        devices:    [{ mac: `d073d50000${i.toString().padStart(2, '0')}`, ip: '0.0.0.0', port: 0 }],
         timestamps: { clientSentAt: 0, serverReceivedAt: 0, serverRespondedAt: 0 },
       })
     }
@@ -179,28 +179,28 @@ describe('SseHub — ring buffer eviction', () => {
     let nowValue = 1_000_000
     const registry = new DeviceRegistry()
     const hub = new SseHub(registry, {
-      bufferMaxAgeMs: 100,
+      bufferMaxAgeMs:   100,
       bufferMaxEntries: 1000,
-      debounceMs: 50,
-      heartbeatMs: 60_000,
-      now: () => nowValue,
+      debounceMs:       50,
+      heartbeatMs:      60_000,
+      now:              () => nowValue,
     })
 
     registry.dispatch({
-      type: 'discovery_result',
-      devices: [], timestamps: { clientSentAt: 0, serverReceivedAt: 0, serverRespondedAt: 0 },
+      type:       'discovery_result',
+      devices:    [], timestamps: { clientSentAt: 0, serverReceivedAt: 0, serverRespondedAt: 0 },
     })  // id=1, ts=1_000_000
 
     nowValue += 50
     registry.dispatch({
-      type: 'discovery_result',
-      devices: [], timestamps: { clientSentAt: 0, serverReceivedAt: 0, serverRespondedAt: 0 },
+      type:       'discovery_result',
+      devices:    [], timestamps: { clientSentAt: 0, serverReceivedAt: 0, serverRespondedAt: 0 },
     })  // id=2, ts=1_000_050
 
     nowValue += 200  // jump well past the 100ms age cap from id=1
     registry.dispatch({
-      type: 'discovery_result',
-      devices: [], timestamps: { clientSentAt: 0, serverReceivedAt: 0, serverRespondedAt: 0 },
+      type:       'discovery_result',
+      devices:    [], timestamps: { clientSentAt: 0, serverReceivedAt: 0, serverRespondedAt: 0 },
     })  // id=3, ts=1_000_250 — at trim time, id=1 (age 250) and id=2 (age 200) both evicted
 
     // Only id=3 remains in the buffer.
@@ -238,8 +238,8 @@ describe('SseHub — attach / resume semantics', () => {
 
     for (let i = 0; i < 5; i++) {
       registry.dispatch({
-        type: 'discovery_result',
-        devices: [], timestamps: { clientSentAt: 0, serverReceivedAt: 0, serverRespondedAt: 0 },
+        type:       'discovery_result',
+        devices:    [], timestamps: { clientSentAt: 0, serverReceivedAt: 0, serverRespondedAt: 0 },
       })
     }
     // Buffer now holds ids 1..5.
@@ -260,8 +260,8 @@ describe('SseHub — attach / resume semantics', () => {
 
     for (let i = 0; i < 5; i++) {
       registry.dispatch({
-        type: 'discovery_result',
-        devices: [], timestamps: { clientSentAt: 0, serverReceivedAt: 0, serverRespondedAt: 0 },
+        type:       'discovery_result',
+        devices:    [], timestamps: { clientSentAt: 0, serverReceivedAt: 0, serverRespondedAt: 0 },
       })
     }
     // Buffer now holds ids 4..5; client thinks it's at id=1 — gap.
@@ -280,8 +280,8 @@ describe('SseHub — attach / resume semantics', () => {
     const hub = new SseHub(registry, { debounceMs: 50, heartbeatMs: 60_000 })
 
     registry.dispatch({
-      type: 'discovery_result',
-      devices: [], timestamps: { clientSentAt: 0, serverReceivedAt: 0, serverRespondedAt: 0 },
+      type:       'discovery_result',
+      devices:    [], timestamps: { clientSentAt: 0, serverReceivedAt: 0, serverRespondedAt: 0 },
     })  // id=1 emitted; counter now 1
 
     const sent: string[] = []
@@ -304,8 +304,8 @@ describe('SseHub — connection lifecycle', () => {
     detach()
 
     registry.dispatch({
-      type: 'discovery_result',
-      devices: [], timestamps: { clientSentAt: 0, serverReceivedAt: 0, serverRespondedAt: 0 },
+      type:       'discovery_result',
+      devices:    [], timestamps: { clientSentAt: 0, serverReceivedAt: 0, serverRespondedAt: 0 },
     })
 
     expect(sent).toEqual([])
@@ -332,16 +332,16 @@ describe('SseHub — connection lifecycle', () => {
     badCallCount = 0  // discard the initial snapshot attempt count
 
     registry.dispatch({
-      type: 'discovery_result',
-      devices: [], timestamps: { clientSentAt: 0, serverReceivedAt: 0, serverRespondedAt: 0 },
+      type:       'discovery_result',
+      devices:    [], timestamps: { clientSentAt: 0, serverReceivedAt: 0, serverRespondedAt: 0 },
     })
 
     expect(goodSent).toHaveLength(1)
     expect(badCallCount).toBe(1)  // tried once, threw, was detached
 
     registry.dispatch({
-      type: 'discovery_result',
-      devices: [], timestamps: { clientSentAt: 0, serverReceivedAt: 0, serverRespondedAt: 0 },
+      type:       'discovery_result',
+      devices:    [], timestamps: { clientSentAt: 0, serverReceivedAt: 0, serverRespondedAt: 0 },
     })
 
     expect(goodSent).toHaveLength(2)

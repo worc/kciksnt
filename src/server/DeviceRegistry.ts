@@ -19,7 +19,7 @@ export class DeviceRegistry extends EventEmitter {
   private readonly knownDevices   = new Map<string, DiscoveredDevice>()
   private readonly knownSnapshots = new Map<string, DeviceSnapshot>()
   private productsDb: LifxVendor[] | null = null
-  private saveTimer: ReturnType<typeof setTimeout> | null = null
+  private saveTimer:  ReturnType<typeof setTimeout> | null = null
 
   // ---------------------------------------------------------------------------
   // Device routing table

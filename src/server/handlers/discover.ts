@@ -57,8 +57,8 @@ export async function discover (
   // discovery_result first so clients create entries for all macs before
   // the per-field cache dispatches below try to merge into them.
   registry.dispatch({
-    type: 'discovery_result',
-    devices: [...devices, ...undetected],
+    type:       'discovery_result',
+    devices:    [...devices, ...undetected],
     timestamps: { clientSentAt, serverReceivedAt, serverRespondedAt: Date.now() },
   })
 
@@ -81,8 +81,8 @@ export async function discover (
 
     for (const update of updates) {
       registry.dispatch({
-        type: 'device_field',
-        mac: u.mac,
+        type:       'device_field',
+        mac:        u.mac,
         update,
         timestamps: { clientSentAt, serverReceivedAt, serverRespondedAt: Date.now() },
       })

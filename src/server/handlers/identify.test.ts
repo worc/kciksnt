@@ -36,10 +36,10 @@ describe('identifyDevice', () => {
 
     const emitter = new EventEmitter()
     const udp: LifxSocket = {
-      on:  (e, l) => { emitter.on(e, l) },
-      off: (e, l) => { emitter.off(e, l) },
+      on:        (e, l) => { emitter.on(e, l) },
+      off:       (e, l) => { emitter.off(e, l) },
       broadcast: () => {},
-      send: payload => {
+      send:      payload => {
         // Outgoing protocol type lives at bytes 32-33 (LE) of the header.
         const reqType = new DataView(
           (payload as Uint8Array).buffer,
@@ -81,8 +81,8 @@ describe('identifyDevice', () => {
     // Socket that broadcasts but never receives a StateService back: simulates
     // a network where no LIFX device answered the discovery sweep.
     const udp: LifxSocket = {
-      on: () => {}, off: () => {}, broadcast: () => {},
-      send: () => {}, close: () => {},
+      on:        () => {}, off:       () => {}, broadcast: () => {},
+      send:      () => {}, close:     () => {},
     }
 
     await identifyDevice(mac, 100, 110, registry, udp, 5)
@@ -108,8 +108,8 @@ describe('identifyDevice', () => {
 
     // Accepts sends but never responds — every query will time out.
     const udp: LifxSocket = {
-      on: () => {}, off: () => {}, broadcast: () => {},
-      send: () => {}, close: () => {},
+      on:        () => {}, off:       () => {}, broadcast: () => {},
+      send:      () => {}, close:     () => {},
     }
 
     await identifyDevice(mac, 100, 110, registry, udp, 5)

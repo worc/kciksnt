@@ -37,11 +37,11 @@ interface PendingDebounce {
 }
 
 export interface SseHubOptions {
-  now?:               () => number
-  debounceMs?:        number  // device_field coalesce window
-  heartbeatMs?:       number  // SSE comment ":" emitted per connection
-  bufferMaxEntries?:  number  // hard cap on ring buffer length
-  bufferMaxAgeMs?:    number  // hard cap on ring buffer age
+  now?:              () => number
+  debounceMs?:       number  // device_field coalesce window
+  heartbeatMs?:      number  // SSE comment ":" emitted per connection
+  bufferMaxEntries?: number  // hard cap on ring buffer length
+  bufferMaxAgeMs?:   number  // hard cap on ring buffer age
 }
 
 export class SseHub {
@@ -53,7 +53,7 @@ export class SseHub {
   private readonly bufferMaxAgeMs:   number
 
   private readonly connections      = new Set<Connection>()
-  private readonly ringBuffer:      BufferedEvent[] = []
+  private readonly ringBuffer: BufferedEvent[] = []
   private readonly pendingDebounces = new Map<string, PendingDebounce>()
   private eventIdCounter            = 0
 
@@ -160,8 +160,8 @@ export class SseHub {
 
   private buildSnapshotFrame (): string {
     const snapshot: ServerMessage = {
-      type:      'snapshot',
-      devices:   this.registry.getAllSnapshots(),
+      type:       'snapshot',
+      devices:    this.registry.getAllSnapshots(),
       timestamps: { clientSentAt: 0, serverReceivedAt: 0, serverRespondedAt: this.now() },
     }
     return formatEvent({

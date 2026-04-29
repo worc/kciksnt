@@ -28,14 +28,14 @@ describe('discover', () => {
     const emitter = new EventEmitter()
     const broadcasts: Uint8Array[] = []
     const udp: LifxSocket = {
-      on:  (e, l) => { emitter.on(e, l) },
-      off: (e, l) => { emitter.off(e, l) },
+      on:        (e, l) => { emitter.on(e, l) },
+      off:       (e, l) => { emitter.off(e, l) },
       broadcast: payload => {
         broadcasts.push(payload as Uint8Array)
         // Simulate one device replying mid-window.
         queueMicrotask(() => emitter.emit('message', Buffer.from(stateService), port, ip))
       },
-      send: () => {},
+      send:  () => {},
       close: () => {},
     }
 
@@ -68,9 +68,9 @@ describe('discover', () => {
     // builds these entries during a normal session.
     registry.setDevice(offlineMac, { mac: offlineMac, ip: offlineIp, port })
     registry.dispatch({
-      type: 'device_field',
-      mac: offlineMac,
-      update: { field: 'label', value: 'Bedroom' },
+      type:       'device_field',
+      mac:        offlineMac,
+      update:     { field: 'label', value: 'Bedroom' },
       timestamps: { clientSentAt: 0, serverReceivedAt: 0, serverRespondedAt: 0 },
     })
 
@@ -86,12 +86,12 @@ describe('discover', () => {
 
     const emitter = new EventEmitter()
     const udp: LifxSocket = {
-      on:  (e, l) => { emitter.on(e, l) },
-      off: (e, l) => { emitter.off(e, l) },
+      on:        (e, l) => { emitter.on(e, l) },
+      off:       (e, l) => { emitter.off(e, l) },
       broadcast: () => {
         queueMicrotask(() => emitter.emit('message', Buffer.from(stateService), port, presentIp))
       },
-      send: () => {},
+      send:  () => {},
       close: () => {},
     }
 

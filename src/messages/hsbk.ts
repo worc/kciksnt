@@ -14,10 +14,10 @@ export function encodeHsbk (hsbk: Lifx.Application.Hsbk): Uint8Array {
 export function decodeHsbk (buf: Uint8Array): Lifx.Application.Hsbk {
   const view = new DataView(buf.buffer, buf.byteOffset, buf.byteLength)
   return {
-    hue: (view.getUint16(0, true) / 0x10000) * 360,
+    hue:        (view.getUint16(0, true) / 0x10000) * 360,
     saturation: view.getUint16(2, true) / 0xFFFF,
     brightness: view.getUint16(4, true) / 0xFFFF,
-    kelvin: view.getUint16(6, true),
+    kelvin:     view.getUint16(6, true),
   }
 }
 

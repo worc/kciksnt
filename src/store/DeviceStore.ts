@@ -11,23 +11,23 @@ interface InspectTelemetry {
 }
 
 interface DeviceStore {
-  devices:           DeviceSnapshot[]
-  undetectedMacs:    Set<string>
-  inspecting:        Set<string>
-  inspectErrors:     Record<string, string>
-  inspectTelemetry:  Record<string, InspectTelemetry>
-  duration:          number   // global transition duration in ms
+  devices:          DeviceSnapshot[]
+  undetectedMacs:   Set<string>
+  inspecting:       Set<string>
+  inspectErrors:    Record<string, string>
+  inspectTelemetry: Record<string, InspectTelemetry>
+  duration:         number   // global transition duration in ms
 
-  discover:      () => void
-  identify:      (mac: string) => void
-  inspect:       (mac: string) => void
-  reinspect:     (mac: string) => void
-  setColor:      (mac: string, hsbk: Lifx.Application.Hsbk, duration?: number) => void
-  setPower:      (mac: string, on: boolean) => void
-  setLabel:      (mac: string, label: string) => void
-  setGroup:      (mac: string, label: string) => void
-  setLocation:   (mac: string, label: string) => void
-  setDuration:   (ms: number) => void
+  discover:    () => void
+  identify:    (mac: string) => void
+  inspect:     (mac: string) => void
+  reinspect:   (mac: string) => void
+  setColor:    (mac: string, hsbk: Lifx.Application.Hsbk, duration?: number) => void
+  setPower:    (mac: string, on: boolean) => void
+  setLabel:    (mac: string, label: string) => void
+  setGroup:    (mac: string, label: string) => void
+  setLocation: (mac: string, label: string) => void
+  setDuration: (ms: number) => void
 }
 
 // Retry delays: fast attempts first, then once-per-minute
@@ -49,7 +49,7 @@ const useDeviceStore = create<DeviceStore>((set, get) => {
       inspectErrors: { ...state.inspectErrors, [mac]: '' },
     }))
     const message: ClientMessage = {
-      type: 'inspect_device',
+      type:       'inspect_device',
       mac,
       timestamps: { clientSentAt: Date.now() },
     }
@@ -89,7 +89,7 @@ const useDeviceStore = create<DeviceStore>((set, get) => {
     }))
 
     const message: ClientMessage = {
-      type: 'identify_device',
+      type:       'identify_device',
       mac,
       timestamps: { clientSentAt: Date.now() },
     }
@@ -184,7 +184,7 @@ const useDeviceStore = create<DeviceStore>((set, get) => {
 
     discover () {
       const message: ClientMessage = {
-        type: 'discover',
+        type:       'discover',
         timestamps: { clientSentAt: Date.now() },
       }
       send(message)

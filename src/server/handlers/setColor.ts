@@ -27,8 +27,8 @@ export async function handleSetColor (
     // change — that's the wrong snapshot to show as the confirmed ghost state.
     await requestResponse(udp, device, buildSetColor(mac, hsbk, duration, { ack_required: true }), 45, timeoutMs)
     registry.dispatch({
-      type: 'device_field', mac, origin,
-      update: { field: 'color', value: hsbk },
+      type:       'device_field', mac, origin,
+      update:     { field: 'color', value: hsbk },
       timestamps: { clientSentAt, serverReceivedAt, serverRespondedAt: Date.now() },
     })
   } catch (e) {

@@ -5,8 +5,8 @@ const TARGET_ALL = '000000000000'
 interface BuildOpts {
   res_required?: boolean
   ack_required?: boolean
-  sequence?: number
-  source?: number
+  sequence?:     number
+  source?:       number
 }
 
 export function buildMessage (
@@ -21,17 +21,17 @@ export function buildMessage (
   const header = encodeHeader({
     frameHeader: {
       size,
-      protocol: 1024,
+      protocol:    1024,
       addressable: true,
-      tagged: target === TARGET_ALL,
-      origin: 0,
-      source: opts.source ?? 1,
+      tagged:      target === TARGET_ALL,
+      origin:      0,
+      source:      opts.source ?? 1,
     },
     frameAddress: {
       target,
       res_required: opts.res_required ?? false,
       ack_required: opts.ack_required ?? false,
-      sequence: opts.sequence ?? 1,
+      sequence:     opts.sequence ?? 1,
     },
     protocolHeader: { type },
   })

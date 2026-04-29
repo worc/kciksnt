@@ -2,11 +2,11 @@ import type { DiscoveredDevice } from './api'
 import type { Lifx } from './lifx'
 
 interface WebSocketMessage {
-  type: string,
+  type:       string,
   timestamps: {
-    clientReceivedAt?: number   // stamped onmessage
-    clientSentAt: number        // echoed from client
-    serverReceivedAt?: number    // stamped when server message handler fired
+    clientReceivedAt?:  number   // stamped onmessage
+    clientSentAt:       number        // echoed from client
+    serverReceivedAt?:  number    // stamped when server message handler fired
     serverRespondedAt?: number   // stamped just before ws.send
   }
 }
@@ -20,43 +20,43 @@ interface Discover extends WebSocketMessage {
 
 interface IdentifyDevice extends WebSocketMessage {
   type: 'identify_device'
-  mac: string
+  mac:  string
 }
 
 interface InspectDevice extends WebSocketMessage {
   type: 'inspect_device'
-  mac: string
+  mac:  string
 }
 
 interface SetColor extends WebSocketMessage {
-  type: 'set_color'
-  mac: string
-  hsbk: Lifx.Application.Hsbk
+  type:      'set_color'
+  mac:       string
+  hsbk:      Lifx.Application.Hsbk
   duration?: number
 }
 
 interface SetLabel extends WebSocketMessage {
-  type: 'set_label'
-  mac: string
+  type:  'set_label'
+  mac:   string
   label: string
 }
 
 interface SetGroup extends WebSocketMessage {
-  type: 'set_group'
-  mac: string
+  type:  'set_group'
+  mac:   string
   label: string
 }
 
 interface SetLocation extends WebSocketMessage {
-  type: 'set_location'
-  mac: string
+  type:  'set_location'
+  mac:   string
   label: string
 }
 
 interface SetPower extends WebSocketMessage {
-  type: 'set_power'
-  mac: string
-  on: boolean
+  type:     'set_power'
+  mac:      string
+  on:       boolean
   duration: number  // ms; 0 = instant (SetPower/21), >0 = SetLightPower/117
 }
 
@@ -78,20 +78,20 @@ export type ClientMessage =
 // ---------------------------------------------------------------------------
 
 export interface DeviceSnapshot {
-  mac: string
-  ip?: string
-  port?: number
+  mac:       string
+  ip?:       string
+  port?:     number
   label?:    string
   power?:    { level: number; on: boolean }
   color?:    Lifx.Application.Hsbk
   firmware?: { version_major: number; version_minor: number; build: string }
   wifi?:     { signal: number; rssi: number; quality: string }
   version?:  {
-    vendor: number
-    product: number
-    vendorName?: string
+    vendor:       number
+    product:      number
+    vendorName?:  string
     productName?: string
-    features?: Record<string, boolean | number | null>
+    features?:    Record<string, boolean | number | null>
   }
   group?:    string
   location?: string
@@ -113,14 +113,14 @@ export type DeviceFieldUpdate =
 // Server → Client
 // ---------------------------------------------------------------------------
 interface DiscoveryResult extends WebSocketMessage {
-  type: 'discovery_result'
+  type:    'discovery_result'
   devices: DiscoveredDevice[]
 }
 
 interface DeviceField extends WebSocketMessage {
-  type: 'device_field'
-  mac: string
-  update: DeviceFieldUpdate
+  type:    'device_field'
+  mac:     string
+  update:  DeviceFieldUpdate
   // commandId of the originating client command, when known. Lets a client
   // distinguish its own echoed change from a foreign one (another client, a
   // physical switch, a scheduled scene). Populated in step 3 alongside POST
@@ -129,18 +129,18 @@ interface DeviceField extends WebSocketMessage {
 }
 
 interface Snapshot extends WebSocketMessage {
-  type: 'snapshot'
+  type:    'snapshot'
   devices: DeviceSnapshot[]
 }
 
 interface DeviceInspectComplete extends WebSocketMessage {
   type: 'device_inspect_complete'
-  mac: string
+  mac:  string
 }
 
 interface DeviceInspectError extends WebSocketMessage {
-  type: 'device_inspect_error'
-  mac: string
+  type:  'device_inspect_error'
+  mac:   string
   error: string
 }
 
@@ -149,7 +149,7 @@ interface DevReload {
 }
 
 interface Error extends WebSocketMessage {
-  type: 'error'
+  type:    'error'
   message: string
 }
 

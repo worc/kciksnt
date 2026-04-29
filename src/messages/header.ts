@@ -7,12 +7,12 @@ import {
 
 export function prepareFrameHeader (frameHeader: Lifx.Application.FrameHeader): Lifx.OverWire.FrameHeader {
   return {
-    size: asUint16(frameHeader.size),
-    protocol: asUint16(frameHeader.protocol),
+    size:        asUint16(frameHeader.size),
+    protocol:    asUint16(frameHeader.protocol),
     addressable: 0b1,
-    tagged: (frameHeader.tagged ? 0b1 : 0b0),
-    origin: asUint8(frameHeader.origin),
-    source: asUint32(frameHeader.source),
+    tagged:      (frameHeader.tagged ? 0b1 : 0b0),
+    origin:      asUint8(frameHeader.origin),
+    source:      asUint32(frameHeader.source),
   }
 }
 
@@ -25,10 +25,10 @@ export function prepareFrameAddress (frameAddress: Lifx.Application.FrameAddress
   }
 
   return {
-    target: deviceIdByteArray,
+    target:       deviceIdByteArray,
     res_required: frameAddress.res_required ? 0b1 : 0b0,
     ack_required: frameAddress.ack_required ? 0b1 : 0b0,
-    sequence: asUint8(frameAddress.sequence),
+    sequence:     asUint8(frameAddress.sequence),
   }
 }
 
@@ -39,8 +39,8 @@ export function prepareProtocolHeader (protocolHeader: Lifx.Application.Protocol
 }
 
 interface Options {
-  frameHeader: Lifx.Application.FrameHeader
-  frameAddress: Lifx.Application.FrameAddress
+  frameHeader:    Lifx.Application.FrameHeader
+  frameAddress:   Lifx.Application.FrameAddress
   protocolHeader: Lifx.Application.ProtocolHeader
 }
 export function encodeHeader (options: Options): Lifx.OverWire.Header {
@@ -77,8 +77,8 @@ export function encodeHeader (options: Options): Lifx.OverWire.Header {
 }
 
 export function decodeHeader(header: Lifx.OverWire.Header): {
-  frameHeader: Lifx.Application.FrameHeader
-  frameAddress: Lifx.Application.FrameAddress
+  frameHeader:    Lifx.Application.FrameHeader
+  frameAddress:   Lifx.Application.FrameAddress
   protocolHeader: Lifx.Application.ProtocolHeader
 } {
   const view = new DataView(header.buffer, header.byteOffset, header.byteLength)
@@ -100,8 +100,8 @@ export function decodeHeader(header: Lifx.OverWire.Header): {
   const type = view.getUint16(32, true)
 
   return {
-    frameHeader: { size, protocol, addressable: true, tagged, origin: 0, source },
-    frameAddress: { target, res_required, ack_required, sequence },
+    frameHeader:    { size, protocol, addressable: true, tagged, origin: 0, source },
+    frameAddress:   { target, res_required, ack_required, sequence },
     protocolHeader: { type },
   }
 }

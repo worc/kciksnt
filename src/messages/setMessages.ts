@@ -6,7 +6,7 @@ import { encodeLifxString } from '../protocol/strings'
 interface Opts {
   res_required?: boolean
   ack_required?: boolean
-  sequence?: number
+  sequence?:     number
 }
 
 export function setPower (target: string, on: boolean, opts: Opts = {}): Uint8Array {

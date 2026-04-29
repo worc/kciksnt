@@ -2,8 +2,8 @@
 // and as the schema for lifx-lan.json.
 
 export interface FieldDescription {
-  name: string
-  type: string // deliberately a plain string — BoolInt, Reserved, Color[N], Tile[N] etc. don't map cleanly to TS types
+  name:         string
+  type:         string // deliberately a plain string — BoolInt, Reserved, Color[N], Tile[N] etc. don't map cleanly to TS types
   description?: string
 }
 

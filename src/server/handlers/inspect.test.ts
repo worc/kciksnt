@@ -68,10 +68,10 @@ describe('inspectDevice', () => {
 
     const emitter = new EventEmitter()
     const udp: LifxSocket = {
-      on:  (e, l) => { emitter.on(e, l) },
-      off: (e, l) => { emitter.off(e, l) },
+      on:        (e, l) => { emitter.on(e, l) },
+      off:       (e, l) => { emitter.off(e, l) },
       broadcast: () => {},
-      send: payload => {
+      send:      payload => {
         const reqType = new DataView(
           (payload as Uint8Array).buffer,
           (payload as Uint8Array).byteOffset,
@@ -122,8 +122,8 @@ describe('inspectDevice', () => {
     registry.on('dispatch', m => dispatched.push(m))
 
     const udp: LifxSocket = {
-      on: () => {}, off: () => {}, broadcast: () => {},
-      send: () => {}, close: () => {},
+      on:        () => {}, off:       () => {}, broadcast: () => {},
+      send:      () => {}, close:     () => {},
     }
 
     await inspectDevice(mac, 100, 110, registry, udp, 5)
@@ -147,8 +147,8 @@ describe('inspectDevice', () => {
     registry.on('dispatch', m => dispatched.push(m))
 
     const udp: LifxSocket = {
-      on: () => {}, off: () => {}, broadcast: () => {},
-      send: () => {}, close: () => {},
+      on:        () => {}, off:       () => {}, broadcast: () => {},
+      send:      () => {}, close:     () => {},
     }
 
     await inspectDevice(mac, 100, 110, registry, udp, 5)
@@ -180,10 +180,10 @@ describe('inspectDevice', () => {
 
     const emitter = new EventEmitter()
     const udp: LifxSocket = {
-      on:  (e, l) => { emitter.on(e, l) },
-      off: (e, l) => { emitter.off(e, l) },
+      on:        (e, l) => { emitter.on(e, l) },
+      off:       (e, l) => { emitter.off(e, l) },
       broadcast: () => {},
-      send: payload => {
+      send:      payload => {
         const reqType = new DataView(
           (payload as Uint8Array).buffer,
           (payload as Uint8Array).byteOffset,

@@ -31,10 +31,10 @@ export async function handleSetPower (
     // not after the fade completes — so the timeout can stay short.
     await requestResponse(udp, device, msg, 45, timeoutMs)
     registry.dispatch({
-      type: 'device_field',
+      type:       'device_field',
       mac,
       origin,
-      update: { field: 'power', value: { level: on ? 65535 : 0, on } },
+      update:     { field: 'power', value: { level: on ? 65535 : 0, on } },
       timestamps: { clientSentAt, serverReceivedAt, serverRespondedAt: Date.now() },
     })
   } catch (e) {

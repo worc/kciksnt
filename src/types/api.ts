@@ -3,9 +3,9 @@
 import type { Lifx } from './lifx'
 
 export interface DiscoveredDevice {
-  mac: string
-  ip: string
-  port: number
+  mac:       string
+  ip:        string
+  port:      number
   // false = known from persisted store but not seen in this discovery run
   detected?: boolean
 }

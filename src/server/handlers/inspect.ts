@@ -29,9 +29,9 @@ export async function inspectDevice (
     device = found.find(d => d.mac === mac)
     if (!device) {
       registry.dispatch({
-        type: 'device_inspect_error',
+        type:       'device_inspect_error',
         mac,
-        error: 'Device not found on network',
+        error:      'Device not found on network',
         timestamps: { clientSentAt, serverReceivedAt, serverRespondedAt: Date.now() },
       })
       return
@@ -44,7 +44,7 @@ export async function inspectDevice (
   function field (update: DeviceFieldUpdate) {
     fieldCount++
     registry.dispatch({
-      type: 'device_field',
+      type:       'device_field',
       mac,
       origin,
       update,
@@ -112,14 +112,14 @@ export async function inspectDevice (
 
   if (fieldCount === 0) {
     registry.dispatch({
-      type: 'device_inspect_error',
+      type:       'device_inspect_error',
       mac,
-      error: 'unreachable',
+      error:      'unreachable',
       timestamps: { clientSentAt, serverReceivedAt, serverRespondedAt: Date.now() },
     })
   } else {
     registry.dispatch({
-      type: 'device_inspect_complete',
+      type:       'device_inspect_complete',
       mac,
       timestamps: { clientSentAt, serverReceivedAt, serverRespondedAt: Date.now() },
     })
