@@ -122,8 +122,11 @@ describe('inspectDevice', () => {
     registry.on('dispatch', m => dispatched.push(m))
 
     const udp: LifxSocket = {
-      on:        () => {}, off:       () => {}, broadcast: () => {},
-      send:      () => {}, close:     () => {},
+      on:        () => {},
+      off:       () => {},
+      broadcast: () => {},
+      send:      () => {},
+      close:     () => {},
     }
 
     await inspectDevice(mac, 100, 110, registry, udp, 5)
@@ -147,8 +150,11 @@ describe('inspectDevice', () => {
     registry.on('dispatch', m => dispatched.push(m))
 
     const udp: LifxSocket = {
-      on:        () => {}, off:       () => {}, broadcast: () => {},
-      send:      () => {}, close:     () => {},
+      on:        () => {},
+      off:       () => {},
+      broadcast: () => {},
+      send:      () => {},
+      close:     () => {},
     }
 
     await inspectDevice(mac, 100, 110, registry, udp, 5)

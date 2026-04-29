@@ -63,55 +63,83 @@ export function parseMessage (data: Uint8Array): ParsedMessage {
   const view = new DataView(payloadBuf.buffer, payloadBuf.byteOffset, payloadBuf.byteLength)
 
   switch (type) {
-    case 3: return { type, header, payload: {
-      service: view.getUint8(0),
-      port:    view.getUint32(1, true),
-    }}
+    case 3: return {
+      type,
+      header,
+      payload: {
+        service: view.getUint8(0),
+        port:    view.getUint32(1, true),
+      }
+    }
 
-    case 15: return { type, header, payload: {
-      build:         view.getBigUint64(0, true),
-      version_minor: view.getUint16(16, true),
-      version_major: view.getUint16(18, true),
-    }}
+    case 15: return {
+      type,
+      header,
+      payload: {
+        build:         view.getBigUint64(0, true),
+        version_minor: view.getUint16(16, true),
+        version_major: view.getUint16(18, true),
+      }
+    }
 
     case 17: {
       const signal = view.getFloat32(0, true)
       return { type, header, payload: { signal, ...signalQuality(signal) } }
     }
 
-    case 19: return { type, header, payload: {
-      build:         new Date(Number(view.getBigUint64(0, true))),
-      version_minor: view.getUint16(16),
-      version_major: view.getUint16(18),
-    }}
+    case 19: return {
+      type,
+      header,
+      payload: {
+        build:         new Date(Number(view.getBigUint64(0, true))),
+        version_minor: view.getUint16(16),
+        version_major: view.getUint16(18),
+      }
+    }
 
     case 22: {
       const level = view.getUint16(0, true)
       return { type, header, payload: { level, on: level > 0 } }
     }
 
-    case 25: return { type, header, payload: {
-      label: decodeLifxString(payloadBuf.slice(0, 32)),
-    }}
+    case 25: return {
+      type,
+      header,
+      payload: {
+        label: decodeLifxString(payloadBuf.slice(0, 32)),
+      }
+    }
 
-    case 33: return { type, header, payload: {
-      vendor:  view.getUint32(0, true),
-      product: view.getUint32(4, true),
-    }}
+    case 33: return {
+      type,
+      header,
+      payload: {
+        vendor:  view.getUint32(0, true),
+        product: view.getUint32(4, true),
+      }
+    }
 
     case 45: return { type, header, payload: null }
 
-    case 50: return { type, header, payload: {
-      location:   payloadBuf.slice(0, 16),
-      label:      decodeLifxString(payloadBuf.slice(16, 48)),
-      updated_at: view.getBigUint64(48, true),
-    }}
+    case 50: return {
+      type,
+      header,
+      payload: {
+        location:   payloadBuf.slice(0, 16),
+        label:      decodeLifxString(payloadBuf.slice(16, 48)),
+        updated_at: view.getBigUint64(48, true),
+      }
+    }
 
-    case 53: return { type, header, payload: {
-      group:      payloadBuf.slice(0, 16),
-      label:      decodeLifxString(payloadBuf.slice(16, 48)),
-      updated_at: view.getBigUint64(48, true),
-    }}
+    case 53: return {
+      type,
+      header,
+      payload: {
+        group:      payloadBuf.slice(0, 16),
+        label:      decodeLifxString(payloadBuf.slice(16, 48)),
+        updated_at: view.getBigUint64(48, true),
+      }
+    }
 
     case 107: {
       // hue(2) sat(2) bright(2) kelvin(2) reserved(2) power(2) label(32) reserved(8)
@@ -121,11 +149,15 @@ export function parseMessage (data: Uint8Array): ParsedMessage {
       return { type, header, payload: { color, power, on: power > 0, label } }
     }
 
-    case 35: return { type, header, payload: {
-      time:     view.getBigUint64(0,  true),
-      uptime:   view.getBigUint64(8,  true),
-      downtime: view.getBigUint64(16, true),
-    }}
+    case 35: return {
+      type,
+      header,
+      payload: {
+        time:     view.getBigUint64(0,  true),
+        uptime:   view.getBigUint64(8,  true),
+        downtime: view.getBigUint64(16, true),
+      }
+    }
 
     case 118: {
       const level = view.getUint16(0, true)

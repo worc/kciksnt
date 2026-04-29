@@ -68,7 +68,9 @@ describe('handleSetColor', () => {
 
     const sends: Uint8Array[] = []
     const udp: LifxSocket = {
-      on:        () => {}, off:       () => {}, broadcast: () => {},
+      on:        () => {},
+      off:       () => {},
+      broadcast: () => {},
       send:      payload => { sends.push(payload as Uint8Array) },
       close:     () => {},
     }
@@ -96,7 +98,9 @@ describe('handleSetColor', () => {
     // reaches the device but whose ack is dropped (or no device is listening).
     const sends: Uint8Array[] = []
     const udp: LifxSocket = {
-      on:        () => {}, off:       () => {}, broadcast: () => {},
+      on:        () => {},
+      off:       () => {},
+      broadcast: () => {},
       send:      payload => { sends.push(payload as Uint8Array) },
       close:     () => {},
     }

@@ -63,21 +63,27 @@ export async function inspectDevice (
   // 2. Host firmware
   await tryQuery(getHostFirmware(mac), 15, msg => {
     if (!msg.payload) return
-    field({ field: 'firmware', value: {
-      version_major: msg.payload.version_major,
-      version_minor: msg.payload.version_minor,
-      build:         msg.payload.build.toString(),
-    }})
+    field({
+      field: 'firmware',
+      value: {
+        version_major: msg.payload.version_major,
+        version_minor: msg.payload.version_minor,
+        build:         msg.payload.build.toString(),
+      }
+    })
   })
 
   // 3. Wifi signal
   await tryQuery(getWifiInfo(mac), 17, msg => {
     if (!msg.payload) return
-    field({ field: 'wifi', value: {
-      signal:  msg.payload.signal,
-      rssi:    msg.payload.rssi,
-      quality: msg.payload.quality,
-    }})
+    field({
+      field: 'wifi',
+      value: {
+        signal:  msg.payload.signal,
+        rssi:    msg.payload.rssi,
+        quality: msg.payload.quality,
+      }
+    })
   })
 
   // 4. Version — vendor/product IDs + optional registry lookup
@@ -103,11 +109,14 @@ export async function inspectDevice (
   // 7. Uptime / device clock
   await tryQuery(getInfo(mac), 35, msg => {
     if (!msg.payload) return
-    field({ field: 'info', value: {
-      time:        msg.payload.time.toString(),
-      uptime_ns:   msg.payload.uptime.toString(),
-      downtime_ns: msg.payload.downtime.toString(),
-    }})
+    field({
+      field: 'info',
+      value: {
+        time:        msg.payload.time.toString(),
+        uptime_ns:   msg.payload.uptime.toString(),
+        downtime_ns: msg.payload.downtime.toString(),
+      }
+    })
   })
 
   if (fieldCount === 0) {

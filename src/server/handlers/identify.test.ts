@@ -81,8 +81,11 @@ describe('identifyDevice', () => {
     // Socket that broadcasts but never receives a StateService back: simulates
     // a network where no LIFX device answered the discovery sweep.
     const udp: LifxSocket = {
-      on:        () => {}, off:       () => {}, broadcast: () => {},
-      send:      () => {}, close:     () => {},
+      on:        () => {},
+      off:       () => {},
+      broadcast: () => {},
+      send:      () => {},
+      close:     () => {},
     }
 
     await identifyDevice(mac, 100, 110, registry, udp, 5)
@@ -108,8 +111,11 @@ describe('identifyDevice', () => {
 
     // Accepts sends but never responds — every query will time out.
     const udp: LifxSocket = {
-      on:        () => {}, off:       () => {}, broadcast: () => {},
-      send:      () => {}, close:     () => {},
+      on:        () => {},
+      off:       () => {},
+      broadcast: () => {},
+      send:      () => {},
+      close:     () => {},
     }
 
     await identifyDevice(mac, 100, 110, registry, udp, 5)

@@ -22,7 +22,9 @@ export async function handleSetLocation (
   try {
     await requestResponse(udp, device, buildSetLocation(mac, label), 45, timeoutMs)
     registry.dispatch({
-      type:       'device_field', mac, origin,
+      type:       'device_field',
+      mac,
+      origin,
       update:     { field: 'location', value: label },
       timestamps: { clientSentAt, serverReceivedAt, serverRespondedAt: Date.now() },
     })

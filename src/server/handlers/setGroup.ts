@@ -22,7 +22,9 @@ export async function handleSetGroup (
   try {
     await requestResponse(udp, device, buildSetGroup(mac, label), 45, timeoutMs)
     registry.dispatch({
-      type:       'device_field', mac, origin,
+      type:       'device_field',
+      mac,
+      origin,
       update:     { field: 'group', value: label },
       timestamps: { clientSentAt, serverReceivedAt, serverRespondedAt: Date.now() },
     })
