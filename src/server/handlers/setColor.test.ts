@@ -30,13 +30,13 @@ describe('handleSetColor', () => {
     const udp: LifxSocket = {
       on:        (e, l) => { emitter.on(e, l) },
       off:       (e, l) => { emitter.off(e, l) },
-      broadcast: () => {},
+      broadcast: () => { /* no-op */ },
       send:      (payload, sendIp, sendPort) => {
         sends.push({ payload: payload as Uint8Array, ip: sendIp, port: sendPort })
         const ack = buildMessage(45, mac)
         queueMicrotask(() => emitter.emit('message', Buffer.from(ack), port, ip))
       },
-      close: () => {},
+      close: () => { /* no-op */ },
     }
 
     await handleSetColor(mac, hsbk, 0, 100, 110, registry, udp)
@@ -68,11 +68,11 @@ describe('handleSetColor', () => {
 
     const sends: Uint8Array[] = []
     const udp: LifxSocket = {
-      on:        () => {},
-      off:       () => {},
-      broadcast: () => {},
+      on:        () => { /* no-op */ },
+      off:       () => { /* no-op */ },
+      broadcast: () => { /* no-op */ },
       send:      payload => { sends.push(payload as Uint8Array) },
-      close:     () => {},
+      close:     () => { /* no-op */ },
     }
 
     await handleSetColor(mac, hsbk, 0, 100, 110, registry, udp)
@@ -98,11 +98,11 @@ describe('handleSetColor', () => {
     // reaches the device but whose ack is dropped (or no device is listening).
     const sends: Uint8Array[] = []
     const udp: LifxSocket = {
-      on:        () => {},
-      off:       () => {},
-      broadcast: () => {},
+      on:        () => { /* no-op */ },
+      off:       () => { /* no-op */ },
+      broadcast: () => { /* no-op */ },
       send:      payload => { sends.push(payload as Uint8Array) },
-      close:     () => {},
+      close:     () => { /* no-op */ },
     }
 
     await handleSetColor(mac, hsbk, 0, 100, 110, registry, udp, 5)

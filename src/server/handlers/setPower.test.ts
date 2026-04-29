@@ -25,12 +25,12 @@ describe('handleSetPower', () => {
     const udp: LifxSocket = {
       on:        (e, l) => { emitter.on(e, l) },
       off:       (e, l) => { emitter.off(e, l) },
-      broadcast: () => {},
+      broadcast: () => { /* no-op */ },
       send:      payload => {
         sends.push(payload as Uint8Array)
         queueMicrotask(() => emitter.emit('message', Buffer.from(buildMessage(45, mac)), port, ip))
       },
-      close: () => {},
+      close: () => { /* no-op */ },
     }
 
     await handleSetPower(mac, true, 0, 100, 110, registry, udp)
@@ -59,12 +59,12 @@ describe('handleSetPower', () => {
     const udp: LifxSocket = {
       on:        (e, l) => { emitter.on(e, l) },
       off:       (e, l) => { emitter.off(e, l) },
-      broadcast: () => {},
+      broadcast: () => { /* no-op */ },
       send:      payload => {
         sends.push(payload as Uint8Array)
         queueMicrotask(() => emitter.emit('message', Buffer.from(buildMessage(45, mac)), port, ip))
       },
-      close: () => {},
+      close: () => { /* no-op */ },
     }
 
     await handleSetPower(mac, false, 1500, 100, 110, registry, udp)
@@ -86,11 +86,11 @@ describe('handleSetPower', () => {
 
     const sends: Uint8Array[] = []
     const udp: LifxSocket = {
-      on:        () => {},
-      off:       () => {},
-      broadcast: () => {},
+      on:        () => { /* no-op */ },
+      off:       () => { /* no-op */ },
+      broadcast: () => { /* no-op */ },
       send:      payload => { sends.push(payload as Uint8Array) },
-      close:     () => {},
+      close:     () => { /* no-op */ },
     }
 
     await handleSetPower(mac, true, 0, 100, 110, registry, udp)
@@ -113,11 +113,11 @@ describe('handleSetPower', () => {
 
     const sends: Uint8Array[] = []
     const udp: LifxSocket = {
-      on:        () => {},
-      off:       () => {},
-      broadcast: () => {},
+      on:        () => { /* no-op */ },
+      off:       () => { /* no-op */ },
+      broadcast: () => { /* no-op */ },
       send:      payload => { sends.push(payload as Uint8Array) },
-      close:     () => {},
+      close:     () => { /* no-op */ },
     }
 
     await handleSetPower(mac, true, 0, 100, 110, registry, udp, 5)

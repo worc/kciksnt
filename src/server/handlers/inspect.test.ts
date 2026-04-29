@@ -70,7 +70,7 @@ describe('inspectDevice', () => {
     const udp: LifxSocket = {
       on:        (e, l) => { emitter.on(e, l) },
       off:       (e, l) => { emitter.off(e, l) },
-      broadcast: () => {},
+      broadcast: () => { /* no-op */ },
       send:      payload => {
         const reqType = new DataView(
           (payload as Uint8Array).buffer,
@@ -87,7 +87,7 @@ describe('inspectDevice', () => {
           null
         if (reply) queueMicrotask(() => emitter.emit('message', Buffer.from(reply), port, ip))
       },
-      close: () => {},
+      close: () => { /* no-op */ },
     }
 
     await inspectDevice(mac, 100, 110, registry, udp)
@@ -122,11 +122,11 @@ describe('inspectDevice', () => {
     registry.on('dispatch', m => dispatched.push(m))
 
     const udp: LifxSocket = {
-      on:        () => {},
-      off:       () => {},
-      broadcast: () => {},
-      send:      () => {},
-      close:     () => {},
+      on:        () => { /* no-op */ },
+      off:       () => { /* no-op */ },
+      broadcast: () => { /* no-op */ },
+      send:      () => { /* no-op */ },
+      close:     () => { /* no-op */ },
     }
 
     await inspectDevice(mac, 100, 110, registry, udp, 5)
@@ -150,11 +150,11 @@ describe('inspectDevice', () => {
     registry.on('dispatch', m => dispatched.push(m))
 
     const udp: LifxSocket = {
-      on:        () => {},
-      off:       () => {},
-      broadcast: () => {},
-      send:      () => {},
-      close:     () => {},
+      on:        () => { /* no-op */ },
+      off:       () => { /* no-op */ },
+      broadcast: () => { /* no-op */ },
+      send:      () => { /* no-op */ },
+      close:     () => { /* no-op */ },
     }
 
     await inspectDevice(mac, 100, 110, registry, udp, 5)
@@ -188,7 +188,7 @@ describe('inspectDevice', () => {
     const udp: LifxSocket = {
       on:        (e, l) => { emitter.on(e, l) },
       off:       (e, l) => { emitter.off(e, l) },
-      broadcast: () => {},
+      broadcast: () => { /* no-op */ },
       send:      payload => {
         const reqType = new DataView(
           (payload as Uint8Array).buffer,
@@ -199,7 +199,7 @@ describe('inspectDevice', () => {
         }
         // All other request types: deliberately silent — let them time out.
       },
-      close: () => {},
+      close: () => { /* no-op */ },
     }
 
     await inspectDevice(mac, 100, 110, registry, udp, 5)

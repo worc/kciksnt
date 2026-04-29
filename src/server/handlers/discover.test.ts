@@ -35,8 +35,8 @@ describe('discover', () => {
         // Simulate one device replying mid-window.
         queueMicrotask(() => emitter.emit('message', Buffer.from(stateService), port, ip))
       },
-      send:  () => {},
-      close: () => {},
+      send:  () => { /* no-op */ },
+      close: () => { /* no-op */ },
     }
 
     const found = await discover(registry, udp, 100, 110, 50)
@@ -91,8 +91,8 @@ describe('discover', () => {
       broadcast: () => {
         queueMicrotask(() => emitter.emit('message', Buffer.from(stateService), port, presentIp))
       },
-      send:  () => {},
-      close: () => {},
+      send:  () => { /* no-op */ },
+      close: () => { /* no-op */ },
     }
 
     await discover(registry, udp, 100, 110, 50)

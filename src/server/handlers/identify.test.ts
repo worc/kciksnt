@@ -38,7 +38,7 @@ describe('identifyDevice', () => {
     const udp: LifxSocket = {
       on:        (e, l) => { emitter.on(e, l) },
       off:       (e, l) => { emitter.off(e, l) },
-      broadcast: () => {},
+      broadcast: () => { /* no-op */ },
       send:      payload => {
         // Outgoing protocol type lives at bytes 32-33 (LE) of the header.
         const reqType = new DataView(
@@ -52,7 +52,7 @@ describe('identifyDevice', () => {
           null
         if (reply) queueMicrotask(() => emitter.emit('message', Buffer.from(reply), port, ip))
       },
-      close: () => {},
+      close: () => { /* no-op */ },
     }
 
     await identifyDevice(mac, 100, 110, registry, udp)
@@ -81,11 +81,11 @@ describe('identifyDevice', () => {
     // Socket that broadcasts but never receives a StateService back: simulates
     // a network where no LIFX device answered the discovery sweep.
     const udp: LifxSocket = {
-      on:        () => {},
-      off:       () => {},
-      broadcast: () => {},
-      send:      () => {},
-      close:     () => {},
+      on:        () => { /* no-op */ },
+      off:       () => { /* no-op */ },
+      broadcast: () => { /* no-op */ },
+      send:      () => { /* no-op */ },
+      close:     () => { /* no-op */ },
     }
 
     await identifyDevice(mac, 100, 110, registry, udp, 5)
@@ -111,11 +111,11 @@ describe('identifyDevice', () => {
 
     // Accepts sends but never responds — every query will time out.
     const udp: LifxSocket = {
-      on:        () => {},
-      off:       () => {},
-      broadcast: () => {},
-      send:      () => {},
-      close:     () => {},
+      on:        () => { /* no-op */ },
+      off:       () => { /* no-op */ },
+      broadcast: () => { /* no-op */ },
+      send:      () => { /* no-op */ },
+      close:     () => { /* no-op */ },
     }
 
     await identifyDevice(mac, 100, 110, registry, udp, 5)
