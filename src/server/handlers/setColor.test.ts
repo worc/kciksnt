@@ -54,4 +54,56 @@ describe('handleSetColor', () => {
     expect(msg.timestamps.serverReceivedAt).toBe(110)
     expect(typeof msg.timestamps.serverRespondedAt).toBe('number')
   })
+
+  it('logs and returns without sending when device is not in cache', async () => {
+    spyOn(process.stderr, 'write').mockImplementation(() => true as never)
+
+    const mac = 'd073d5000099'
+    const hsbk = { hue: 0, saturation: 0, brightness: 0.5, kelvin: 3500 }
+
+    const registry = new DeviceRegistry()
+    // Note: no setDevice call — the registry has nothing for this MAC.
+    const dispatched: ServerMessage[] = []
+    registry.on('dispatch', m => dispatched.push(m))
+
+    const sends: Uint8Array[] = []
+    const udp: LifxSocket = {
+      on: () => {}, off: () => {}, broadcast: () => {},
+      send: payload => { sends.push(payload as Uint8Array) },
+      close: () => {},
+    }
+
+    await handleSetColor(mac, hsbk, 0, 100, 110, registry, udp)
+
+    expect(sends).toEqual([])
+    expect(dispatched).toEqual([])
+  })
+
+  it('does not dispatch when no ack arrives within timeoutMs', async () => {
+    spyOn(process.stderr, 'write').mockImplementation(() => true as never)
+
+    const mac = 'd073d500009a'
+    const ip = '192.168.1.99'
+    const port = 56700
+    const hsbk = { hue: 200, saturation: 1, brightness: 0.5, kelvin: 3500 }
+
+    const registry = new DeviceRegistry()
+    registry.setDevice(mac, { mac, ip, port })
+    const dispatched: ServerMessage[] = []
+    registry.on('dispatch', m => dispatched.push(m))
+
+    // Socket accepts the send but never replies — simulates a UDP packet that
+    // reaches the device but whose ack is dropped (or no device is listening).
+    const sends: Uint8Array[] = []
+    const udp: LifxSocket = {
+      on: () => {}, off: () => {}, broadcast: () => {},
+      send: payload => { sends.push(payload as Uint8Array) },
+      close: () => {},
+    }
+
+    await handleSetColor(mac, hsbk, 0, 100, 110, registry, udp, 5)
+
+    expect(sends).toHaveLength(1)         // we did try
+    expect(dispatched).toEqual([])        // but never confirmed, so no echo to clients
+  })
 })

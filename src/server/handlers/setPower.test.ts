@@ -74,4 +74,51 @@ describe('handleSetPower', () => {
     if (msg.type !== 'device_field') throw new Error(`expected device_field, got ${msg.type}`)
     expect(msg.update).toEqual({ field: 'power', value: { level: 0, on: false } })
   })
+
+  it('logs and returns without sending when device is not in cache', async () => {
+    spyOn(process.stderr, 'write').mockImplementation(() => true as never)
+
+    const mac = 'd073d50000a1'
+
+    const registry = new DeviceRegistry()
+    const dispatched: ServerMessage[] = []
+    registry.on('dispatch', m => dispatched.push(m))
+
+    const sends: Uint8Array[] = []
+    const udp: LifxSocket = {
+      on: () => {}, off: () => {}, broadcast: () => {},
+      send: payload => { sends.push(payload as Uint8Array) },
+      close: () => {},
+    }
+
+    await handleSetPower(mac, true, 0, 100, 110, registry, udp)
+
+    expect(sends).toEqual([])
+    expect(dispatched).toEqual([])
+  })
+
+  it('does not dispatch when no ack arrives within timeoutMs', async () => {
+    spyOn(process.stderr, 'write').mockImplementation(() => true as never)
+
+    const mac = 'd073d50000a2'
+    const ip = '192.168.1.111'
+    const port = 56700
+
+    const registry = new DeviceRegistry()
+    registry.setDevice(mac, { mac, ip, port })
+    const dispatched: ServerMessage[] = []
+    registry.on('dispatch', m => dispatched.push(m))
+
+    const sends: Uint8Array[] = []
+    const udp: LifxSocket = {
+      on: () => {}, off: () => {}, broadcast: () => {},
+      send: payload => { sends.push(payload as Uint8Array) },
+      close: () => {},
+    }
+
+    await handleSetPower(mac, true, 0, 100, 110, registry, udp, 5)
+
+    expect(sends).toHaveLength(1)
+    expect(dispatched).toEqual([])
+  })
 })

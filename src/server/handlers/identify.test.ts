@@ -69,4 +69,54 @@ describe('identifyDevice', () => {
 
     expect(dispatched[3].type).toBe('device_inspect_complete')
   })
+
+  it('dispatches device_inspect_error when discovery cannot find the requested mac', async () => {
+    const mac = 'd073d5000031'
+
+    const registry = new DeviceRegistry()
+    // Empty registry — handler will fall through to discoverForCache.
+    const dispatched: ServerMessage[] = []
+    registry.on('dispatch', m => dispatched.push(m))
+
+    // Socket that broadcasts but never receives a StateService back: simulates
+    // a network where no LIFX device answered the discovery sweep.
+    const udp: LifxSocket = {
+      on: () => {}, off: () => {}, broadcast: () => {},
+      send: () => {}, close: () => {},
+    }
+
+    await identifyDevice(mac, 100, 110, registry, udp, 5)
+
+    expect(dispatched).toHaveLength(1)
+    const msg = dispatched[0]
+    if (msg.type !== 'device_inspect_error') throw new Error(`expected device_inspect_error, got ${msg.type}`)
+    expect(msg.mac).toBe(mac)
+    expect(msg.error).toBe('Device not found on network')
+  })
+
+  it('dispatches device_inspect_error "unreachable" when the device is cached but answers nothing', async () => {
+    spyOn(process.stderr, 'write').mockImplementation(() => true as never)
+
+    const mac = 'd073d5000032'
+    const ip = '192.168.1.72'
+    const port = 56700
+
+    const registry = new DeviceRegistry()
+    registry.setDevice(mac, { mac, ip, port })  // skip the discovery fallback
+    const dispatched: ServerMessage[] = []
+    registry.on('dispatch', m => dispatched.push(m))
+
+    // Accepts sends but never responds — every query will time out.
+    const udp: LifxSocket = {
+      on: () => {}, off: () => {}, broadcast: () => {},
+      send: () => {}, close: () => {},
+    }
+
+    await identifyDevice(mac, 100, 110, registry, udp, 5)
+
+    expect(dispatched).toHaveLength(1)
+    const msg = dispatched[0]
+    if (msg.type !== 'device_inspect_error') throw new Error(`expected device_inspect_error, got ${msg.type}`)
+    expect(msg.error).toBe('unreachable')
+  })
 })
