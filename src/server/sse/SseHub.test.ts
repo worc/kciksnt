@@ -188,19 +188,22 @@ describe('SseHub — ring buffer eviction', () => {
 
     registry.dispatch({
       type:       'discovery_result',
-      devices:    [], timestamps: { clientSentAt: 0, serverReceivedAt: 0, serverRespondedAt: 0 },
+      devices:    [],
+      timestamps: { clientSentAt: 0, serverReceivedAt: 0, serverRespondedAt: 0 },
     })  // id=1, ts=1_000_000
 
     nowValue += 50
     registry.dispatch({
       type:       'discovery_result',
-      devices:    [], timestamps: { clientSentAt: 0, serverReceivedAt: 0, serverRespondedAt: 0 },
+      devices:    [],
+      timestamps: { clientSentAt: 0, serverReceivedAt: 0, serverRespondedAt: 0 },
     })  // id=2, ts=1_000_050
 
     nowValue += 200  // jump well past the 100ms age cap from id=1
     registry.dispatch({
       type:       'discovery_result',
-      devices:    [], timestamps: { clientSentAt: 0, serverReceivedAt: 0, serverRespondedAt: 0 },
+      devices:    [],
+      timestamps: { clientSentAt: 0, serverReceivedAt: 0, serverRespondedAt: 0 },
     })  // id=3, ts=1_000_250 — at trim time, id=1 (age 250) and id=2 (age 200) both evicted
 
     // Only id=3 remains in the buffer.
@@ -239,7 +242,8 @@ describe('SseHub — attach / resume semantics', () => {
     for (let i = 0; i < 5; i++) {
       registry.dispatch({
         type:       'discovery_result',
-        devices:    [], timestamps: { clientSentAt: 0, serverReceivedAt: 0, serverRespondedAt: 0 },
+        devices:    [],
+        timestamps: { clientSentAt: 0, serverReceivedAt: 0, serverRespondedAt: 0 },
       })
     }
     // Buffer now holds ids 1..5.
@@ -261,7 +265,8 @@ describe('SseHub — attach / resume semantics', () => {
     for (let i = 0; i < 5; i++) {
       registry.dispatch({
         type:       'discovery_result',
-        devices:    [], timestamps: { clientSentAt: 0, serverReceivedAt: 0, serverRespondedAt: 0 },
+        devices:    [],
+        timestamps: { clientSentAt: 0, serverReceivedAt: 0, serverRespondedAt: 0 },
       })
     }
     // Buffer now holds ids 4..5; client thinks it's at id=1 — gap.
@@ -281,7 +286,8 @@ describe('SseHub — attach / resume semantics', () => {
 
     registry.dispatch({
       type:       'discovery_result',
-      devices:    [], timestamps: { clientSentAt: 0, serverReceivedAt: 0, serverRespondedAt: 0 },
+      devices:    [],
+      timestamps: { clientSentAt: 0, serverReceivedAt: 0, serverRespondedAt: 0 },
     })  // id=1 emitted; counter now 1
 
     const sent: string[] = []
@@ -305,7 +311,8 @@ describe('SseHub — connection lifecycle', () => {
 
     registry.dispatch({
       type:       'discovery_result',
-      devices:    [], timestamps: { clientSentAt: 0, serverReceivedAt: 0, serverRespondedAt: 0 },
+      devices:    [],
+      timestamps: { clientSentAt: 0, serverReceivedAt: 0, serverRespondedAt: 0 },
     })
 
     expect(sent).toEqual([])
@@ -333,7 +340,8 @@ describe('SseHub — connection lifecycle', () => {
 
     registry.dispatch({
       type:       'discovery_result',
-      devices:    [], timestamps: { clientSentAt: 0, serverReceivedAt: 0, serverRespondedAt: 0 },
+      devices:    [],
+      timestamps: { clientSentAt: 0, serverReceivedAt: 0, serverRespondedAt: 0 },
     })
 
     expect(goodSent).toHaveLength(1)
@@ -341,7 +349,8 @@ describe('SseHub — connection lifecycle', () => {
 
     registry.dispatch({
       type:       'discovery_result',
-      devices:    [], timestamps: { clientSentAt: 0, serverReceivedAt: 0, serverRespondedAt: 0 },
+      devices:    [],
+      timestamps: { clientSentAt: 0, serverReceivedAt: 0, serverRespondedAt: 0 },
     })
 
     expect(goodSent).toHaveLength(2)
