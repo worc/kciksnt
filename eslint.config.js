@@ -37,7 +37,7 @@ export default tseslint.config(
       '@stylistic/semi': ['error', 'never'],
 
       // Non-stylistic rules
-      'curly': ['error', 'all'],
+      'curly': ['error', 'multi-line'],
       'default-case': 'error',
       'dot-notation': 'error',
       'eqeqeq': ['error', 'always'],
