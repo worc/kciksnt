@@ -23,7 +23,7 @@ export default tseslint.config(
       '@stylistic/arrow-spacing': ['error', { before: true, after: true }],
       '@stylistic/block-spacing': ['error', 'always'],
       '@stylistic/brace-style': ['error', '1tbs', { allowSingleLine: true }],
-      '@stylistic/comma-dangle': ['error', 'always-multiline'],
+      '@stylistic/comma-dangle': ['error', 'only-multiline'],
       '@stylistic/comma-spacing': ['error', { before: false, after: true }],
       '@stylistic/eol-last': ['error', 'always'],
       '@stylistic/func-call-spacing': ['error', 'never'],
