@@ -134,7 +134,7 @@ interface Snapshot extends WebSocketMessage {
 }
 
 interface DeviceInspectComplete extends WebSocketMessage {
-  type:'device_inspect_complete'
+  type: 'device_inspect_complete'
   mac: string
 }
 

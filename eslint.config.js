@@ -28,7 +28,7 @@ export default tseslint.config(
       '@stylistic/eol-last': ['error', 'always'],
       '@stylistic/func-call-spacing': ['error', 'never'],
       '@stylistic/indent': ['error', 2],
-      '@stylistic/key-spacing': ['error', { beforeColon: false, afterColon: true, mode: 'strict' }],
+      '@stylistic/key-spacing': ['error', { beforeColon: false, afterColon: true, mode: 'minimum' }],
       '@stylistic/keyword-spacing': ['error', { before: true, after: true }],
       '@stylistic/no-multi-spaces': 'error',
       '@stylistic/no-trailing-spaces': 'error',
