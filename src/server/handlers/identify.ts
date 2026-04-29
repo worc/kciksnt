@@ -11,10 +11,11 @@ export async function identifyDevice (
   serverReceivedAt: number,
   registry: DeviceRegistry,
   udp: LifxSocket,
+  timeoutMs?: number,
 ): Promise<void> {
   let device = registry.getDevice(mac)
   if (!device) {
-    const found = await discoverForCache(registry, udp)
+    const found = await discoverForCache(registry, udp, timeoutMs)
     device = found.find(d => d.mac === mac)
     if (!device) {
       registry.dispatch({
@@ -27,7 +28,7 @@ export async function identifyDevice (
     }
   }
 
-  const tryQuery = makeTryQuery(udp, device, `identify ${mac}`)
+  const tryQuery = makeTryQuery(udp, device, `identify ${mac}`, timeoutMs)
   let fieldCount = 0
 
   function field (update: DeviceFieldUpdate) {

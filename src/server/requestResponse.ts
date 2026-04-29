@@ -46,6 +46,7 @@ export function makeTryQuery (
   udp: LifxSocket,
   device: DiscoveredDevice,
   logPrefix: string,
+  timeoutMs?: number,
 ) {
   return async function tryQuery <T extends number>(
     message: Uint8Array,
@@ -53,7 +54,7 @@ export function makeTryQuery (
     handler: (msg: ParsedMessage & { type: T }) => void,
   ): Promise<void> {
     try {
-      const msg = await requestResponse(udp, device, message, expectedType)
+      const msg = await requestResponse(udp, device, message, expectedType, timeoutMs)
       if (msg.type === expectedType) handler(msg as ParsedMessage & { type: T })
     } catch (e) {
       process.stderr.write(`${logPrefix}: ${e}\n`)

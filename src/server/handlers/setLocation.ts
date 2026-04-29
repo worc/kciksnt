@@ -10,6 +10,7 @@ export async function handleSetLocation (
   serverReceivedAt: number,
   registry: DeviceRegistry,
   udp: LifxSocket,
+  timeoutMs = 1000,
 ): Promise<void> {
   const device = registry.getDevice(mac)
   if (!device) {
@@ -18,7 +19,7 @@ export async function handleSetLocation (
   }
 
   try {
-    await requestResponse(udp, device, buildSetLocation(mac, label), 45, 1000)
+    await requestResponse(udp, device, buildSetLocation(mac, label), 45, timeoutMs)
     registry.dispatch({
       type: 'device_field', mac,
       update: { field: 'location', value: label },

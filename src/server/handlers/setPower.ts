@@ -11,6 +11,7 @@ export async function handleSetPower (
   serverReceivedAt: number,
   registry: DeviceRegistry,
   udp: LifxSocket,
+  timeoutMs = 1000,
 ): Promise<void> {
   const device = registry.getDevice(mac)
   if (!device) {
@@ -27,7 +28,7 @@ export async function handleSetPower (
   try {
     // Ack (type 45) fires immediately when the device has accepted the command,
     // not after the fade completes — so the timeout can stay short.
-    await requestResponse(udp, device, msg, 45, 1000)
+    await requestResponse(udp, device, msg, 45, timeoutMs)
     registry.dispatch({
       type: 'device_field',
       mac,

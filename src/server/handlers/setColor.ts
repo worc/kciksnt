@@ -12,6 +12,7 @@ export async function handleSetColor (
   serverReceivedAt: number,
   registry: DeviceRegistry,
   udp: LifxSocket,
+  timeoutMs = 1000,
 ): Promise<void> {
   const device = registry.getDevice(mac)
   if (!device) {
@@ -23,7 +24,7 @@ export async function handleSetColor (
     // ack_required (type 45) fires when the device has processed the command.
     // res_required would give back a LightState reflecting the state *before* the
     // change — that's the wrong snapshot to show as the confirmed ghost state.
-    await requestResponse(udp, device, buildSetColor(mac, hsbk, duration, { ack_required: true }), 45, 1000)
+    await requestResponse(udp, device, buildSetColor(mac, hsbk, duration, { ack_required: true }), 45, timeoutMs)
     registry.dispatch({
       type: 'device_field', mac,
       update: { field: 'color', value: hsbk },
