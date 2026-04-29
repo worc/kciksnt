@@ -9,7 +9,7 @@ import type { ParsedMessage } from '../messages/parseMessage'
 // don't trample each other.
 // ---------------------------------------------------------------------------
 
-export function requestResponse <T extends number>(
+export function requestResponse <T extends number> (
   udp: LifxSocket,
   device: DiscoveredDevice,
   message: Uint8Array,
@@ -48,7 +48,7 @@ export function makeTryQuery (
   logPrefix: string,
   timeoutMs?: number,
 ) {
-  return async function tryQuery <T extends number>(
+  return async function tryQuery <T extends number> (
     message: Uint8Array,
     expectedType: T,
     handler: (msg: ParsedMessage & { type: T }) => void,

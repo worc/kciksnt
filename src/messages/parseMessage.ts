@@ -34,7 +34,7 @@ export type ParsedMessage =
   | { type: 118; header: DecodedHeader; payload: StateLightPowerPayload }
   | { type: number; header: DecodedHeader; payload: null }
 
-function signalQuality(signal: number): { rssi: number; quality: string } {
+function signalQuality (signal: number): { rssi: number; quality: string } {
   const rssi = Math.floor(10 * Math.log10(signal) + 0.5)
   if (rssi === 200 || rssi < 0) {
     if (rssi === 200)  return { rssi, quality: 'No signal' }

@@ -76,7 +76,7 @@ export function encodeHeader (options: Options): Lifx.OverWire.Header {
   return header
 }
 
-export function decodeHeader(header: Lifx.OverWire.Header): {
+export function decodeHeader (header: Lifx.OverWire.Header): {
   frameHeader:    Lifx.Application.FrameHeader
   frameAddress:   Lifx.Application.FrameAddress
   protocolHeader: Lifx.Application.ProtocolHeader

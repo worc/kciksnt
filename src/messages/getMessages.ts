@@ -118,6 +118,6 @@ export function getTilePacket (target: string): Uint8Array {
   return buildMessage(718)
 }
 
-export function sensorGetAmbientLight(target: string): Uint8Array {
+export function sensorGetAmbientLight (target: string): Uint8Array {
   return buildMessage(401)
 }
