@@ -30,7 +30,7 @@ export default tseslint.config(
       '@stylistic/indent': ['error', 2],
       '@stylistic/key-spacing': ['error', { beforeColon: false, afterColon: true, mode: 'minimum' }],
       '@stylistic/keyword-spacing': ['error', { before: true, after: true }],
-      '@stylistic/no-multi-spaces': 'error',
+      '@stylistic/no-multi-spaces': ['error', { ignoreEOLComments: true }],
       '@stylistic/no-trailing-spaces': 'error',
       '@stylistic/object-property-newline': ['error', { allowAllPropertiesOnSameLine: true }],
       '@stylistic/quotes': ['error', 'single'],
