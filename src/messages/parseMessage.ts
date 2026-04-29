@@ -41,12 +41,12 @@ function signalQuality(signal: number): { rssi: number; quality: string } {
     if (rssi <= -80)   return { rssi, quality: 'Very bad signal' }
     if (rssi <= -70)   return { rssi, quality: 'Somewhat bad signal' }
     if (rssi <= -60)   return { rssi, quality: 'Alright signal' }
-                       return { rssi, quality: 'Good signal' }
+    return { rssi, quality: 'Good signal' }
   }
   if (rssi <= 6)   return { rssi, quality: 'Very bad signal' }
   if (rssi <= 11)  return { rssi, quality: 'Somewhat bad signal' }
   if (rssi <= 16)  return { rssi, quality: 'Alright signal' }
-                   return { rssi, quality: 'Good signal' }
+  return { rssi, quality: 'Good signal' }
 }
 
 export function parseMessage (data: Uint8Array): ParsedMessage {
