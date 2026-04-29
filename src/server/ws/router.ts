@@ -11,6 +11,7 @@ import { handleSetLocation } from '../handlers/setLocation'
 import { handleSetPower } from '../handlers/setPower'
 import { SseHub } from '../sse/SseHub'
 import { handleEventStream } from '../sse/eventStream'
+import { handleDeviceState, handleDeviceAction, handleDiscover } from '../http/commands'
 
 type WSClient = { send(data: string | ArrayBuffer | Buffer): void }
 
@@ -130,12 +131,22 @@ export function createWsServer (
         return new Response('ok')
       }
 
-      // HTTP API fallback
+      // ----- HTTP command surface (SSE-era client) -----------------------
+      if (req.method === 'POST' && url.pathname === '/api/discover') {
+        return handleDiscover(registry, udp)
+      }
+
+      // /devices/:mac/{state,identify,inspect}
+      const deviceMatch = /^\/devices\/([^/]+)\/(state|identify|inspect)$/.exec(url.pathname)
+      if (deviceMatch && req.method === 'POST') {
+        const [, mac, action] = deviceMatch
+        if (action === 'state') return handleDeviceState(req, mac!, registry, udp)
+        return handleDeviceAction(req, mac!, action as 'identify' | 'inspect', registry, udp)
+      }
+
+      // GET fallback for /api/discover keeps existing tooling working.
       if (url.pathname === '/api/discover') {
-        const now = Date.now()
-        return discover(registry, udp, now, now).then(devices =>
-          new Response(JSON.stringify(devices), { headers: { 'Content-Type': 'application/json' } })
-        )
+        return handleDiscover(registry, udp)
       }
 
       // Static files (paths with a dot) or SPA fallback

@@ -12,6 +12,7 @@ export async function identifyDevice (
   registry: DeviceRegistry,
   udp: LifxSocket,
   timeoutMs?: number,
+  origin: string | null = null,
 ): Promise<void> {
   let device = registry.getDevice(mac)
   if (!device) {
@@ -36,6 +37,7 @@ export async function identifyDevice (
     registry.dispatch({
       type: 'device_field',
       mac,
+      origin,
       update,
       timestamps: { clientSentAt, serverReceivedAt, serverRespondedAt: Date.now() },
     })

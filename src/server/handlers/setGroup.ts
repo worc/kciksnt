@@ -11,6 +11,7 @@ export async function handleSetGroup (
   registry: DeviceRegistry,
   udp: LifxSocket,
   timeoutMs = 1000,
+  origin: string | null = null,
 ): Promise<void> {
   const device = registry.getDevice(mac)
   if (!device) {
@@ -21,7 +22,7 @@ export async function handleSetGroup (
   try {
     await requestResponse(udp, device, buildSetGroup(mac, label), 45, timeoutMs)
     registry.dispatch({
-      type: 'device_field', mac,
+      type: 'device_field', mac, origin,
       update: { field: 'group', value: label },
       timestamps: { clientSentAt, serverReceivedAt, serverRespondedAt: Date.now() },
     })

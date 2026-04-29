@@ -12,6 +12,7 @@ export async function handleSetPower (
   registry: DeviceRegistry,
   udp: LifxSocket,
   timeoutMs = 1000,
+  origin: string | null = null,
 ): Promise<void> {
   const device = registry.getDevice(mac)
   if (!device) {
@@ -32,6 +33,7 @@ export async function handleSetPower (
     registry.dispatch({
       type: 'device_field',
       mac,
+      origin,
       update: { field: 'power', value: { level: on ? 65535 : 0, on } },
       timestamps: { clientSentAt, serverReceivedAt, serverRespondedAt: Date.now() },
     })

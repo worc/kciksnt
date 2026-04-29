@@ -11,6 +11,7 @@ export async function handleSetLabel (
   registry: DeviceRegistry,
   udp: LifxSocket,
   timeoutMs = 1000,
+  origin: string | null = null,
 ): Promise<void> {
   const device = registry.getDevice(mac)
   if (!device) {
@@ -21,7 +22,7 @@ export async function handleSetLabel (
   try {
     await requestResponse(udp, device, buildSetLabel(mac, label, { ack_required: true }), 45, timeoutMs)
     registry.dispatch({
-      type: 'device_field', mac,
+      type: 'device_field', mac, origin,
       update: { field: 'label', value: label },
       timestamps: { clientSentAt, serverReceivedAt, serverRespondedAt: Date.now() },
     })
