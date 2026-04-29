@@ -95,8 +95,7 @@ export class SseHub {
     const conn: Connection = {
       send,
       heartbeat: setInterval(() => {
-        try { send(formatComment('hb')) }
-        catch { this.detach(conn) }
+        try { send(formatComment('hb')) } catch { this.detach(conn) }
       }, this.heartbeatMs),
     }
     this.connections.add(conn)
