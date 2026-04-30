@@ -1,6 +1,7 @@
 import { create } from 'zustand'
-import { send, subscribe } from '../utils/useWebSocket'
-import type { ClientMessage, DeviceSnapshot, DeviceFieldUpdate } from '../types/ws'
+import { command, newCommandId, subscribe } from '../utils/useEventStream'
+import type { DeviceSnapshot, DeviceFieldUpdate } from '../types/ws'
+import type { DeviceStateCommand, DeviceStatePayload, DeviceActionCommand } from '../types/api'
 import type { Lifx } from '../types/lifx'
 
 interface InspectTelemetry {
@@ -34,8 +35,30 @@ interface DeviceStore {
 const RETRY_DELAYS = [2000, 5000, 15000, 60000]
 
 // Module-level maps so timers survive re-renders
-const retryTimers  = new Map<string, ReturnType<typeof setTimeout>>()
-const retryCounts  = new Map<string, number>()
+const retryTimers = new Map<string, ReturnType<typeof setTimeout>>()
+const retryCounts = new Map<string, number>()
+
+// ---------------------------------------------------------------------------
+// Transport helpers — POST envelope + URL builders. All `send` calls live
+// here so the store body stays focused on state shape.
+// ---------------------------------------------------------------------------
+
+function postState (mac: string, payload: DeviceStatePayload): void {
+  const envelope: DeviceStateCommand = {
+    commandId:    newCommandId(),
+    clientSentAt: Date.now(),
+    ...payload,
+  }
+  void command(`/devices/${mac}/state`, envelope)
+}
+
+function postAction (mac: string, action: 'identify' | 'inspect'): void {
+  const envelope: DeviceActionCommand = {
+    commandId:    newCommandId(),
+    clientSentAt: Date.now(),
+  }
+  void command(`/devices/${mac}/${action}`, envelope)
+}
 
 const useDeviceStore = create<DeviceStore>((set, get) => {
 
@@ -48,12 +71,7 @@ const useDeviceStore = create<DeviceStore>((set, get) => {
       inspecting:    new Set([...state.inspecting, mac]),
       inspectErrors: { ...state.inspectErrors, [mac]: '' },
     }))
-    const message: ClientMessage = {
-      type:       'inspect_device',
-      mac,
-      timestamps: { clientSentAt: Date.now() },
-    }
-    send(message)
+    postAction(mac, 'inspect')
   }
 
   function scheduleRetry (mac: string) {
@@ -88,12 +106,7 @@ const useDeviceStore = create<DeviceStore>((set, get) => {
       inspectErrors: { ...state.inspectErrors, [mac]: '' },
     }))
 
-    const message: ClientMessage = {
-      type:       'identify_device',
-      mac,
-      timestamps: { clientSentAt: Date.now() },
-    }
-    send(message)
+    postAction(mac, 'identify')
   }
 
   // ---------------------------------------------------------------------------
@@ -101,6 +114,15 @@ const useDeviceStore = create<DeviceStore>((set, get) => {
   // ---------------------------------------------------------------------------
 
   subscribe(msg => {
+
+    if (msg.type === 'snapshot') {
+      // Server's authoritative cache on (re)connect. Replaces local devices
+      // wholesale — localStorage and stale state lose to the server here.
+      // Snapshot carries no detected/undetected split; the next discover
+      // run repopulates undetectedMacs.
+      set({ devices: msg.devices, undetectedMacs: new Set() })
+      return
+    }
 
     if (msg.type === 'discovery_result') {
       const undetectedMacs = new Set(
@@ -186,11 +208,7 @@ const useDeviceStore = create<DeviceStore>((set, get) => {
     duration:         500,
 
     discover () {
-      const message: ClientMessage = {
-        type:       'discover',
-        timestamps: { clientSentAt: Date.now() },
-      }
-      send(message)
+      void command('/api/discover', {})
     },
 
     identify,
@@ -217,23 +235,23 @@ const useDeviceStore = create<DeviceStore>((set, get) => {
     },
 
     setColor (mac: string, hsbk: Lifx.Application.Hsbk, duration?: number) {
-      send({ type: 'set_color', mac, hsbk, duration: duration ?? get().duration, timestamps: { clientSentAt: Date.now() } })
+      postState(mac, { field: 'color', value: hsbk, duration: duration ?? get().duration })
     },
 
     setPower (mac: string, on: boolean) {
-      send({ type: 'set_power', mac, on, duration: get().duration, timestamps: { clientSentAt: Date.now() } })
+      postState(mac, { field: 'power', value: on, duration: get().duration })
     },
 
     setLabel (mac: string, label: string) {
-      send({ type: 'set_label', mac, label, timestamps: { clientSentAt: Date.now() } })
+      postState(mac, { field: 'label', value: label })
     },
 
     setGroup (mac: string, label: string) {
-      send({ type: 'set_group', mac, label, timestamps: { clientSentAt: Date.now() } })
+      postState(mac, { field: 'group', value: label })
     },
 
     setLocation (mac: string, label: string) {
-      send({ type: 'set_location', mac, label, timestamps: { clientSentAt: Date.now() } })
+      postState(mac, { field: 'location', value: label })
     },
 
     setDuration (ms: number) {

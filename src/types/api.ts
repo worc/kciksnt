@@ -18,13 +18,21 @@ export interface DiscoveredDevice {
 // event so a tab can match its own command's echo against foreign updates.
 // ---------------------------------------------------------------------------
 
-export type DeviceStateCommand =
-  | { commandId: string; field: 'color';    value: Lifx.Application.Hsbk; duration?: number }
-  | { commandId: string; field: 'label';    value: string }
-  | { commandId: string; field: 'group';    value: string }
-  | { commandId: string; field: 'location'; value: string }
-  | { commandId: string; field: 'power';    value: boolean; duration?: number }
-
-export interface DeviceActionCommand {
-  commandId: string
+export interface CommandEnvelope {
+  commandId:     string
+  // Optional client-side wall-clock so handlers can stamp it onto dispatched
+  // events for round-trip telemetry (inspect timing, etc.). Falls back to
+  // server `Date.now()` when missing.
+  clientSentAt?: number
 }
+
+export type DeviceStatePayload =
+  | { field: 'color';    value: Lifx.Application.Hsbk; duration?: number }
+  | { field: 'label';    value: string }
+  | { field: 'group';    value: string }
+  | { field: 'location'; value: string }
+  | { field: 'power';    value: boolean; duration?: number }
+
+export type DeviceStateCommand = CommandEnvelope & DeviceStatePayload
+
+export type DeviceActionCommand = CommandEnvelope

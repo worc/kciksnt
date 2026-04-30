@@ -125,9 +125,11 @@ export function createWsServer (
         return
       }
 
-      // Dev live-reload — esbuild pings this after each rebuild
+      // Dev live-reload — esbuild pings this after each rebuild. Dispatched
+      // through the registry so both transports (SSE hub + WS broadcaster)
+      // pick it up and reload connected tabs.
       if (url.pathname === '/dev/reload' && req.method === 'POST') {
-        for (const client of wsClients) client.send(JSON.stringify({ type: 'dev_reload' }))
+        registry.dispatch({ type: 'dev_reload' })
         return new Response('ok')
       }
 

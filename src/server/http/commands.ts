@@ -47,24 +47,25 @@ export async function handleDeviceState (
     return json(400, { error: 'invalid body: expected { commandId, field, value, ... }' })
   }
 
-  const now    = Date.now()
-  const origin = body.commandId
+  const serverReceivedAt = Date.now()
+  const clientSentAt     = body.clientSentAt ?? serverReceivedAt
+  const origin           = body.commandId
 
   switch (body.field) {
     case 'color':
-      void handleSetColor(mac, body.value, body.duration ?? 0, now, now, registry, udp, undefined, origin)
+      void handleSetColor(mac, body.value, body.duration ?? 0, clientSentAt, serverReceivedAt, registry, udp, undefined, origin)
       break
     case 'label':
-      void handleSetLabel(mac, body.value, now, now, registry, udp, undefined, origin)
+      void handleSetLabel(mac, body.value, clientSentAt, serverReceivedAt, registry, udp, undefined, origin)
       break
     case 'group':
-      void handleSetGroup(mac, body.value, now, now, registry, udp, undefined, origin)
+      void handleSetGroup(mac, body.value, clientSentAt, serverReceivedAt, registry, udp, undefined, origin)
       break
     case 'location':
-      void handleSetLocation(mac, body.value, now, now, registry, udp, undefined, origin)
+      void handleSetLocation(mac, body.value, clientSentAt, serverReceivedAt, registry, udp, undefined, origin)
       break
     case 'power':
-      void handleSetPower(mac, body.value, body.duration ?? 0, now, now, registry, udp, undefined, origin)
+      void handleSetPower(mac, body.value, body.duration ?? 0, clientSentAt, serverReceivedAt, registry, udp, undefined, origin)
       break
     default:
       return json(400, { error: `unknown field: ${(body as { field: string }).field}` })
@@ -91,11 +92,12 @@ export async function handleDeviceAction (
     return json(400, { error: 'invalid body: expected { commandId }' })
   }
 
-  const now    = Date.now()
-  const origin = body.commandId
-  const fn     = action === 'identify' ? identifyDevice : inspectDevice
+  const serverReceivedAt = Date.now()
+  const clientSentAt     = body.clientSentAt ?? serverReceivedAt
+  const origin           = body.commandId
+  const fn               = action === 'identify' ? identifyDevice : inspectDevice
 
-  void fn(mac, now, now, registry, udp, undefined, origin)
+  void fn(mac, clientSentAt, serverReceivedAt, registry, udp, undefined, origin)
   return json(202, { commandId: origin })
 }
 
