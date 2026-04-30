@@ -12,6 +12,7 @@ spyOn(Bun, 'write').mockResolvedValue(0 as never)
 // (Per the unrolled-tests convention this lives in the file but is invoked
 // explicitly per test — no shared setup.)
 // ---------------------------------------------------------------------------
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function parseFrame (frame: string): { event: string; id: number; data: any } {
   const lines = frame.split('\n')
   const event = lines.find(l => l.startsWith('event: '))!.slice(7)
