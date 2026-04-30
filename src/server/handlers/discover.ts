@@ -1,6 +1,6 @@
 import type { DeviceRegistry } from '../DeviceRegistry'
 import type { LifxSocket } from '../../udp/udpSocket'
-import type { DeviceFieldUpdate } from '../../types/ws'
+import type { DeviceFieldUpdate } from '../../types/events'
 import { parseMessage } from '../../messages/parseMessage'
 import { getService } from '../../messages/getMessages'
 import type { DiscoveredDevice } from '../../types/api'

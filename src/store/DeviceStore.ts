@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { command, newCommandId, subscribe } from '../utils/useEventStream'
-import type { DeviceSnapshot, DeviceFieldUpdate } from '../types/ws'
+import type { DeviceSnapshot, DeviceFieldUpdate } from '../types/events'
 import type { DeviceStateCommand, DeviceStatePayload, DeviceActionCommand } from '../types/api'
 import type { Lifx } from '../types/lifx'
 

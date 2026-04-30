@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { Link } from 'wouter'
 import useDeviceStore from '../store/DeviceStore'
-import type { DeviceSnapshot } from '../types/ws'
+import type { DeviceSnapshot } from '../types/events'
 import type { InspectTelemetry } from '../store/DeviceStore'
 
 import Hsbk from './hsbk/Hsbk'

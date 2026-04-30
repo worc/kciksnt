@@ -1,74 +1,23 @@
 import type { DiscoveredDevice } from './api'
 import type { Lifx } from './lifx'
 
-interface WebSocketMessage {
-  type:       string,
+// ---------------------------------------------------------------------------
+// Server → Client envelope. Every dispatched event carries a `type` plus a
+// timestamps bag that captures the round-trip stamps. With the SSE+POST
+// transport, `clientSentAt` arrives in the POST body, the server stamps
+// `serverReceivedAt` and `serverRespondedAt` in the handler, and the browser
+// stamps `clientReceivedAt` when the SSE frame is received.
+// ---------------------------------------------------------------------------
+
+interface EventEnvelope {
+  type:       string
   timestamps: {
-    clientReceivedAt?:  number   // stamped onmessage
-    clientSentAt:       number        // echoed from client
-    serverReceivedAt?:  number    // stamped when server message handler fired
-    serverRespondedAt?: number   // stamped just before ws.send
+    clientReceivedAt?:  number
+    clientSentAt:       number
+    serverReceivedAt?:  number
+    serverRespondedAt?: number
   }
 }
-
-// ---------------------------------------------------------------------------
-// Client → Server
-// ---------------------------------------------------------------------------
-interface Discover extends WebSocketMessage {
-  type: 'discover'
-}
-
-interface IdentifyDevice extends WebSocketMessage {
-  type: 'identify_device'
-  mac:  string
-}
-
-interface InspectDevice extends WebSocketMessage {
-  type: 'inspect_device'
-  mac:  string
-}
-
-interface SetColor extends WebSocketMessage {
-  type:      'set_color'
-  mac:       string
-  hsbk:      Lifx.Application.Hsbk
-  duration?: number
-}
-
-interface SetLabel extends WebSocketMessage {
-  type:  'set_label'
-  mac:   string
-  label: string
-}
-
-interface SetGroup extends WebSocketMessage {
-  type:  'set_group'
-  mac:   string
-  label: string
-}
-
-interface SetLocation extends WebSocketMessage {
-  type:  'set_location'
-  mac:   string
-  label: string
-}
-
-interface SetPower extends WebSocketMessage {
-  type:     'set_power'
-  mac:      string
-  on:       boolean
-  duration: number  // ms; 0 = instant (SetPower/21), >0 = SetLightPower/117
-}
-
-export type ClientMessage =
-  | Discover
-  | IdentifyDevice
-  | InspectDevice
-  | SetColor
-  | SetLabel
-  | SetGroup
-  | SetLocation
-  | SetPower
 
 // ---------------------------------------------------------------------------
 // Device snapshot — the accumulated picture of one device built up
@@ -110,35 +59,35 @@ export type DeviceFieldUpdate =
   | { field: 'info';     value: NonNullable<DeviceSnapshot['info']> }
 
 // ---------------------------------------------------------------------------
-// Server → Client
+// Server → Client message variants
 // ---------------------------------------------------------------------------
-interface DiscoveryResult extends WebSocketMessage {
+
+interface DiscoveryResult extends EventEnvelope {
   type:    'discovery_result'
   devices: DiscoveredDevice[]
 }
 
-interface DeviceField extends WebSocketMessage {
+interface DeviceField extends EventEnvelope {
   type:    'device_field'
   mac:     string
   update:  DeviceFieldUpdate
   // commandId of the originating client command, when known. Lets a client
   // distinguish its own echoed change from a foreign one (another client, a
-  // physical switch, a scheduled scene). Populated in step 3 alongside POST
-  // commands; always undefined until then.
+  // physical switch, a scheduled scene).
   origin?: string | null
 }
 
-interface Snapshot extends WebSocketMessage {
+interface Snapshot extends EventEnvelope {
   type:    'snapshot'
   devices: DeviceSnapshot[]
 }
 
-interface DeviceInspectComplete extends WebSocketMessage {
+interface DeviceInspectComplete extends EventEnvelope {
   type: 'device_inspect_complete'
   mac:  string
 }
 
-interface DeviceInspectError extends WebSocketMessage {
+interface DeviceInspectError extends EventEnvelope {
   type:  'device_inspect_error'
   mac:   string
   error: string
@@ -148,7 +97,7 @@ interface DevReload {
   type: 'dev_reload'
 }
 
-interface Error extends WebSocketMessage {
+interface Error extends EventEnvelope {
   type:    'error'
   message: string
 }

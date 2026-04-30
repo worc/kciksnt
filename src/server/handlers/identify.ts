@@ -1,6 +1,6 @@
 import type { DeviceRegistry } from '../DeviceRegistry'
 import type { LifxSocket } from '../../udp/udpSocket'
-import type { DeviceFieldUpdate } from '../../types/ws'
+import type { DeviceFieldUpdate } from '../../types/events'
 import { makeTryQuery } from '../requestResponse'
 import { getLabel, getGroup, getLocation } from '../../messages/getMessages'
 import { discoverForCache } from './discover'

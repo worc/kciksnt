@@ -1,7 +1,7 @@
 import { describe, it, expect, spyOn } from 'bun:test'
 import { EventEmitter } from 'node:events'
 import type { LifxSocket } from '../../udp/udpSocket'
-import type { ServerMessage } from '../../types/ws'
+import type { ServerMessage } from '../../types/events'
 import { DeviceRegistry } from '../DeviceRegistry'
 import { buildMessage } from '../../messages/buildMessage'
 import { encodeLifxString } from '../../protocol/strings'

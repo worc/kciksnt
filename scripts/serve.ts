@@ -1,5 +1,5 @@
 import { DeviceRegistry } from '../src/server/DeviceRegistry'
-import { createWsServer } from '../src/server/ws/router'
+import { createHttpServer } from '../src/server/http/router'
 import { createUdpSocket } from '../src/udp/udpSocket'
 
 const PORT = 7410
@@ -16,6 +16,6 @@ try {
   process.exit(1)
 }
 
-createWsServer(registry, udp!, PORT)
+createHttpServer(registry, udp!, PORT)
 
 process.stdout.write(`http://localhost:${PORT}\n`)

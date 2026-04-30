@@ -1,5 +1,5 @@
 import type { DeviceRegistry } from '../DeviceRegistry'
-import type { ServerMessage } from '../../types/ws'
+import type { ServerMessage } from '../../types/events'
 import { formatEvent, formatComment } from './frame'
 
 // ---------------------------------------------------------------------------
@@ -9,9 +9,6 @@ import { formatEvent, formatComment } from './frame'
 // debounces high-frequency `device_field` events per (mac, field), maintains
 // a ring buffer for `Last-Event-ID` resume, and fans formatted SSE frames
 // out to every attached connection.
-//
-// The WebSocket broadcaster is unaffected — it remains a separate subscriber
-// to the same `dispatch` event with firehose semantics.
 // ---------------------------------------------------------------------------
 
 type SendFn = (frame: string) => void

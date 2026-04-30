@@ -1,15 +1,13 @@
-import type { ServerMessage } from '../types/ws'
+import type { ServerMessage } from '../types/events'
 
 // ---------------------------------------------------------------------------
 // SSE + POST transport. One EventSource shared across the app — the store
 // and any components that care about connection state subscribe here; they
 // never open their own connections.
 //
-// EventSource does the heavy lifting we used to hand-roll on top of WebSocket:
-// auto-reconnect with backoff, and `Last-Event-ID` resume on every reconnect.
-// We just translate `event:`-typed frames into ServerMessages and fan them
-// out to handlers, mirroring the old WS subscribe surface exactly so the
-// store can swap transports without changing its reducer.
+// EventSource handles auto-reconnect with backoff and `Last-Event-ID` resume
+// on every reconnect. We translate `event:`-typed frames into ServerMessages
+// and fan them out to handlers.
 // ---------------------------------------------------------------------------
 
 type ConnectionState = 'idle' | 'connecting' | 'open' | 'reconnecting'

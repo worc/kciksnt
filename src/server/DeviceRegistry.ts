@@ -1,7 +1,7 @@
 import { EventEmitter } from 'node:events'
 import { mkdir } from 'node:fs/promises'
 import type { DiscoveredDevice } from '../types/api'
-import type { ServerMessage, DeviceSnapshot } from '../types/ws'
+import type { ServerMessage, DeviceSnapshot } from '../types/events'
 
 interface LifxProductFeatures { [key: string]: boolean | number | null }
 interface LifxProduct { pid: number; name: string; features: LifxProductFeatures }
