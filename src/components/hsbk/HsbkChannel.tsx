@@ -1,5 +1,7 @@
 import React from 'react'
 
+// https://github.com/eslint-stylistic/eslint-stylistic/issues/710
+/* eslint-disable */
 interface Props {
   label:      string
   min:        number
@@ -9,6 +11,7 @@ interface Props {
   reported:   number | null   // last known device value; null = not yet known
   onChange:   (value: number) => void
 }
+/* eslint-enable */
 
 export default function HsbkChannel ({ label, min, max, step, commanded, reported, onChange }: Props) {
   const initialized = commanded !== null

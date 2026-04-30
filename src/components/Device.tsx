@@ -63,6 +63,8 @@ function FeaturesRow ({ features }: { features: NonNullable<DeviceSnapshot['vers
 }
 
 interface EditableFieldProps {
+  // https://github.com/eslint-stylistic/eslint-stylistic/issues/710
+  // eslint-disable-next-line
   value?: string
   onCommit: (next: string) => void
 }
