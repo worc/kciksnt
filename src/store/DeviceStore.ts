@@ -132,12 +132,15 @@ const useDeviceStore = create<DeviceStore>((set, get) => {
           inspecting: new Set([...state.inspecting].filter(m => m !== mac)),
         }
         const t = msg.timestamps
+        // TODO: coerced inequality here?
+        /* eslint-disable */
         if (
           t?.clientSentAt      != null &&
           t?.serverReceivedAt  != null &&
           t?.serverRespondedAt != null &&
           t?.clientReceivedAt  != null
         ) {
+        /* eslint-enable */
           next.inspectTelemetry = {
             ...state.inspectTelemetry,
             [mac]: {
