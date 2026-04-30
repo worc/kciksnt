@@ -22,7 +22,7 @@ export async function createUdpSocket (port = LIFX_PORT): Promise<LifxSocket> {
       data (_sock, data, p, address) {
         emitter.emit('message', data, p, address)
       },
-      drain () {},
+      drain () { /* no-op */ },
       error (...args) { console.error('Socket error:', ...args) },
     },
   })
@@ -30,10 +30,10 @@ export async function createUdpSocket (port = LIFX_PORT): Promise<LifxSocket> {
   socket.setBroadcast(true)
 
   return {
-    on  (event: 'message', listener: MessageHandler) { emitter.on(event, listener) },
+    on (event: 'message', listener: MessageHandler) { emitter.on(event, listener) },
     off (event: 'message', listener: MessageHandler) { emitter.off(event, listener) },
-    broadcast (payload)           { socket.send(payload, LIFX_PORT, BROADCAST_IP) },
-    send      (payload, ip, p = LIFX_PORT) { socket.send(payload, p, ip) },
-    close     ()                  { socket.close() },
+    broadcast (payload) { socket.send(payload, LIFX_PORT, BROADCAST_IP) },
+    send (payload, ip, p = LIFX_PORT) { socket.send(payload, p, ip) },
+    close () { socket.close() },
   }
 }
