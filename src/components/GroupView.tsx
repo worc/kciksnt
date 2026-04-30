@@ -31,14 +31,15 @@ export default function GroupView ({ field, label }: Props) {
   // Staggered to avoid flooding. Re-runs when the device list for this group changes
   // (e.g. a device is added or renamed into/out of the group).
   useEffect(() => {
-    const macString = macs.join(',')
+    // TODO: why did we join macs here?
+    // const macString = macs.join(',')
     // store in a local so the cleanup closure has the right timers
     const timers: ReturnType<typeof setTimeout>[] = []
     macs.forEach((mac, i) => {
       timers.push(setTimeout(() => inspect(mac), i * 100))
     })
     return () => { timers.forEach(clearTimeout) }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // TODO: why did we disable react hooks linting here?
   }, [macs.join(',')])
 
   const title = field === 'location' ? `Location: ${label}` : `Group: ${label}`
