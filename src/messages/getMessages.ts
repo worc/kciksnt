@@ -85,7 +85,7 @@ export function getMultiZoneEffect (target: string): Uint8Array {
   return buildMessage(507, target)
 }
 
-export function getExtendedColorZones (target: string): Uint8Array {
+export function getExtendedColorZones (): Uint8Array {
   return buildMessage(511)
 }
 
@@ -97,7 +97,7 @@ export function getRPower (target: string, relay_index: number): Uint8Array {
   return buildMessage(816, target, payload)
 }
 
-export function getDeviceChain (target: string): Uint8Array {
+export function getDeviceChain (): Uint8Array {
   return buildMessage(701)
 }
 
@@ -114,10 +114,10 @@ export function get64 (target: string, tile_index: number, length: number, x: nu
   return buildMessage(707, target, payload)
 }
 
-export function getTilePacket (target: string): Uint8Array {
+export function getTilePacket (): Uint8Array {
   return buildMessage(718)
 }
 
-export function sensorGetAmbientLight (target: string): Uint8Array {
+export function sensorGetAmbientLight (): Uint8Array {
   return buildMessage(401)
 }
