@@ -94,7 +94,7 @@ export class DeviceRegistry extends EventEmitter {
   // ---------------------------------------------------------------------------
 
   async loadProducts (): Promise<void> {
-    const file = Bun.file('vendor/lifx-products/products.json')
+    const file = Bun.file('src/products/products.json')
     if (await file.exists()) {
       this.productsDb = await file.json() as LifxVendor[]
       process.stdout.write(`Loaded LIFX product registry (${this.productsDb.length} vendors)\n`)
